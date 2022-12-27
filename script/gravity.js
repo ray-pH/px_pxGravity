@@ -51,8 +51,8 @@ class GravitySystem {
         for (let k = 0; k < this.n_iter; k++) {
             for (let i = 1; i < this.nx - 1; i++) {
                 for (let j = 1; j < this.ny - 1; j++) {
-                    let dd = (this.Phi[(i - 1) + ny * j] + this.Phi[(i + 1) + ny * j] +
-                        this.Phi[i + ny * (j - 1)] + this.Phi[i + ny * (j + 1)]);
+                    let dd = (this.Phi_prev[(i - 1) + ny * j] + this.Phi_prev[(i + 1) + ny * j] +
+                        this.Phi_prev[i + ny * (j - 1)] + this.Phi_prev[i + ny * (j + 1)]);
                     this.Phi[i + ny * j] = 0.25 * (dd - 4 * Pi * G * this.Density[i + ny * j] * h2);
                 }
             }
