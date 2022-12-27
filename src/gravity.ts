@@ -1,7 +1,9 @@
-import {arr_add, arr_scale, arr_mul, arr_concat} from "./utils/arr64.js"
-import {step_euler, step_heun, step_RK4} from "./utils/solver64.js"
+import {arr_add, arr_scale, arr_mul, arr_concat} from "./utils/arr32.js"
+import {step_euler, step_heun, step_RK4} from "./utils/solver32.js"
 // import {hex2rgb} from "./utils/color.js"
 // import {Vector2} from "./utils/vector2";
+
+type diffFun = (t : number, arr : Float32Array) => Float32Array;
 
 function clamp(x : number, min : number,max : number) : number{
     return Math.min(max, Math.max(min, x));
@@ -18,7 +20,7 @@ const Pi = 3.14159265; //TODO: more digits
 class GravitySystem {
     Density  : Float32Array;
     Phi: Float32Array; // potential
-    Density_prev  : Float32Array;
+    // Density_prev  : Float32Array;
     Phi_prev: Float32Array; // potential
 
     nx : number;
@@ -32,6 +34,10 @@ class GravitySystem {
     particles_y  : Float32Array;
     particles_vx : Float32Array;
     particles_vy : Float32Array;
+    particle_Arr : Float32Array;
+
+    gx  : Float32Array;
+    gy  : Float32Array;
 
     n_iter : number;
 
@@ -46,7 +52,9 @@ class GravitySystem {
         this.nxy = nxy;
         this.Density = new Float32Array(nxy);
         this.Phi     = new Float32Array(nxy);
-        this.Density_prev = new Float32Array(nxy);
+        this.gx      = new Float32Array(nxy);
+        this.gy      = new Float32Array(nxy);
+        // this.Density_prev = new Float32Array(nxy);
         this.Phi_prev     = new Float32Array(nxy);
 
         this.n_particle   = n_particle;
@@ -56,6 +64,7 @@ class GravitySystem {
         this.particles_y  = new Float32Array(n_particle);
         this.particles_vx = new Float32Array(n_particle);
         this.particles_vy = new Float32Array(n_particle);
+        this.particle_Arr = new Float32Array(n_particle * 4);
 
     }
 
@@ -83,6 +92,14 @@ class GravitySystem {
         }
     }
 
+    calcGvector() : void{
+        let nx = this.nx;
+        for (let i = 1; i < this.nx-1; i++){ for (let j = 1; j < this.ny-1; j++){
+            this.gx[i + nx*j] = - (this.Phi[(i+1) + nx*j] - this.Phi[(i-1) + nx*j]) * 0.5 * this.nx;
+            this.gy[i + nx*j] = - (this.Phi[i + nx*(j+1)] - this.Phi[i + nx*(j-1)]) * 0.5 * this.ny;
+        } }
+    }
+
     extrapolateBoundary(field : Float32Array) {
         var nx = this.nx;
         for (var i = 0; i < this.nx; i++) {
@@ -95,39 +112,56 @@ class GravitySystem {
         }
     }
 
+    // type diffFun = (t : number, arr : Float32Array) => Float32Array;
+    genDiffFun () : diffFun {
+        let fun : diffFun = (_t : number, Arr : Float32Array) => {
+            let len = Arr.length / 4;
+            let res = new Float32Array(Arr.length);
+            let nx  = this.nx;
+            for (let k = 0; k < this.n_particle; k++){
+                let k_x  = k;
+                let k_y  = k +   len;
+                let k_vx = k + 2*len;
+                let k_vy = k + 3*len;
 
-    // ∇⋅g = -∇²Φ
-    // g   = -∇ Φ
-    applyGravityAcc(){
-        // let nx = this.nx;
-        // for (let i = 1; i < this.nx-1; i++){ for (let j = 1; j < this.ny-1; j++){
-        //     if (this.Density[i + nx*j] == 0.0) continue;
-        //     // 1/(2h) = 0.5 n
-        //     let gx = - (this.Phi[(i+1) + nx*j] - this.Phi[(i-1) + nx*j]) * 0.5 * this.nx;
-        //     let gy = - (this.Phi[i + nx*(j+1)] - this.Phi[i + nx*(j-1)]) * 0.5 * this.ny;
-        //     this.Vx[i + nx*j] += gx * this.dt;
-        //     this.Vx[i + nx*j] += gy * this.dt;
-        // } }
-        let nx = this.nx;
-        for (let k = 0; k < this.n_particle; k++){
-            let i = Math.round(this.particles_x[k] * this.nx);
-            let j = Math.round(this.particles_y[k] * this.ny);
-            if (inRange(i, 1, this.nx-2) && inRange(j, 1, this.ny-2)){
-                let gx = - (this.Phi[(i+1) + nx*j] - this.Phi[(i-1) + nx*j]) * 0.5 * this.nx;
-                let gy = - (this.Phi[i + nx*(j+1)] - this.Phi[i + nx*(j-1)]) * 0.5 * this.ny;
-                this.particles_vx[k] += gx * this.dt;
-                this.particles_vy[k] += gy * this.dt;
-                this.particles_x[k] += this.particles_vx[k] * this.dt;
-                this.particles_y[k] += this.particles_vy[k] * this.dt;
+                let i = Math.round(Arr[k_x] * this.nx);
+                let j = Math.round(Arr[k_y] * this.ny);
+
+                if (!(inRange(i, 0, this.nx-1) && inRange(j, 0, this.ny-1))) continue;
+                res[k_x ] = Arr[k_vx]; //Dx
+                res[k_y ] = Arr[k_vy]; //Dy
+                res[k_vx] = this.gx[i + nx*j]; //Dvx
+                res[k_vy] = this.gy[i + nx*j]; //Dvy
             }
+            return res;
         }
+        return fun;
+    }
+
+    stepMotion(){
+        let np = this.n_particle;
+        this.particle_Arr.set(this.particles_x , 0 * np);
+        this.particle_Arr.set(this.particles_y , 1 * np);
+        this.particle_Arr.set(this.particles_vx, 2 * np);
+        this.particle_Arr.set(this.particles_vy, 3 * np);
+
+        let Xn = step_heun(this.genDiffFun(), 0, this.particle_Arr, this.dt);
+
+        this.particles_x .set(Xn.slice(0 *np, 1 *np));
+        this.particles_y .set(Xn.slice(1 *np, 2 *np));
+        this.particles_vx.set(Xn.slice(2 *np, 3 *np));
+        this.particles_vy.set(Xn.slice(3 *np, 4 *np));
     }
 
     step() {
         this.calcDensity();
         this.solveField();
         this.extrapolateBoundary(this.Phi);
-        this.applyGravityAcc();
+        this.calcGvector();
+        this.extrapolateBoundary(this.gx);
+        this.extrapolateBoundary(this.gy);
+        this.stepMotion();
+        // this.applyGravityAcc();
     }
 }
 
