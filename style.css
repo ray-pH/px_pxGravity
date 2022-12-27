@@ -1,0 +1,51 @@
+@font-face {
+    font-family: "pixelUnicode";
+    src: url("./fonts/pixel_unicode/Pixel-UniCode.ttf");
+}
+
+body {
+    font-family: "pixelUnicode";
+    font-size  : 20px;
+    font-weight: 600;
+    letter-spacing: 1px;
+}
+
+.canvas-container {
+    float: left;
+    margin: 10px;
+}
+/* .legend { */
+    /* font-family: "pixelUnicode"; */
+    /* font-size  : 20px; */
+    /* font-weight: 600; */
+/* } */
+.eq {
+    margin-left: 10px;
+    /* font-family: "pixelUnicode"; */
+    /* font-size  : 20px; */
+    /* font-weight: 600; */
+    /* letter-spacing: 2px; */
+}
+
+button{
+    font-family: "pixelUnicode";
+    font-size  : 20px;
+    font-weight: 600;
+    letter-spacing: 1px;
+    border-width: 2px;
+}
+
+.frac {
+    display: inline-block;
+    position: relative;
+    vertical-align: middle;
+    letter-spacing: 0.001em;
+    text-align: center;
+}
+.frac > span {
+    display: block;
+    padding: 0.1em;
+}
+.frac span.bottom {
+    border-top: 2px solid black;
+}
