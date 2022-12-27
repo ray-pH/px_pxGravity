@@ -1,0 +1,194 @@
+import {arr_add, arr_scale, arr_mul, arr_concat} from "./utils/arr64.js"
+import {step_euler, step_heun, step_RK4} from "./utils/solver64.js"
+// import {hex2rgb} from "./utils/color.js"
+// import {Vector2} from "./utils/vector2";
+
+function clamp(x : number, min : number,max : number) : number{
+    return Math.min(max, Math.max(min, x));
+}
+
+const G = 1.0;
+const Pi = 3.14159265; //TODO: more digits
+class GravitySystem {
+    Density  : Float32Array;
+    // Field    : Float32Array;
+    Phi: Float32Array; // potential
+    Vx : Float32Array;
+    Vy : Float32Array;
+    nx : number;
+    ny : number;
+    // dx : number;
+    // dy : number;
+    n  : number;
+    dt : number;
+
+    Density_prev  : Float32Array;
+    Phi_prev: Float32Array; // potential field
+    Vx_prev : Float32Array;
+    Vy_prev : Float32Array;
+
+    n_iter : number;
+
+    constructor(nx : number, ny : number, n_iter : number, dt : number){
+        this.nx = nx;
+        this.ny = ny;
+        this.n_iter = n_iter;
+
+        this.dt = dt;
+
+        let  n = nx * ny;
+        this.n = n;
+        this.Density = new Float32Array(n);
+        this.Phi     = new Float32Array(n);
+        this.Vx      = new Float32Array(n);
+        this.Vy      = new Float32Array(n);
+
+        this.Density_prev = new Float32Array(n);
+        this.Phi_prev     = new Float32Array(n);
+        this.Vx_prev      = new Float32Array(n);
+        this.Vy_prev      = new Float32Array(n);
+    }
+
+    solveField() : void{
+        this.Phi_prev.set(this.Phi);
+        let ny = this.ny;
+        let h2 = 1/(this.nx * this.ny);
+        for (let k = 0; k < this.n_iter; k++){
+            for (let i = 1; i < this.nx-1; i++){ for (let j = 1; j < this.ny-1; j++){
+                let dd = (this.Phi[(i-1) + ny*j] + this.Phi[(i+1) + ny*j] +
+                          this.Phi[i + ny*(j-1)] + this.Phi[i + ny*(j+1)]);
+                this.Phi[i + ny*j] = 0.25 * (dd - 4*Pi*G*this.Density[i + ny*j] * h2);
+            } }
+        }
+    }
+
+    extrapolateBoundary(field : Float32Array) {
+        var nx = this.nx;
+        for (var i = 0; i < this.nx; i++) {
+            field[i + nx*0] = field[i + nx*1];
+            field[i + nx*(this.ny-1)] = field[i + nx*(this.ny-2)]; 
+        }
+        for (var j = 0; j < this.ny; j++) {
+            field[0 + nx*j] = field[1 + nx*j];
+            field[(this.nx-1) + nx*j] = field[(this.nx-2) + nx*j];
+        }
+    }
+
+    // ∇⋅g = -∇²Φ
+    // g   = -∇ Φ
+    applyGravityAcc(){
+        let nx = this.nx;
+        for (let i = 1; i < this.nx-1; i++){ for (let j = 1; j < this.ny-1; j++){
+            if (this.Density[i + nx*j] == 0.0) continue;
+            // 1/(2h) = 0.5 n
+            let gx = - (this.Phi[(i+1) + nx*j] - this.Phi[(i-1) + nx*j]) * 0.5 * this.nx;
+            let gy = - (this.Phi[i + nx*(j+1)] - this.Phi[i + nx*(j-1)]) * 0.5 * this.ny;
+            this.Vx[i + nx*j] += gx * this.dt;
+            this.Vx[i + nx*j] += gy * this.dt;
+        } }
+    }
+
+    MoveDensity() {
+        this.Vx_prev.set(this.Vx);
+        this.Vy_prev.set(this.Vy);
+        this.Density_prev.set(this.Density);
+        this.Vx.fill(0.0);
+        this.Vy.fill(0.0);
+        this.Density.fill(0.0);
+
+        let nx = this.nx;
+        for (let i = 1; i < this.nx-1; i++){ for (let j = 1; j < this.ny-1; j++){
+            let x = i/this.nx; let y = i/this.ny;
+            let x_target = x + this.Vx_prev[i + nx*j] * this.dt;
+            let y_target = y + this.Vy_prev[i + nx*j] * this.dt;
+            let i_target = clamp(Math.round(x_target * this.nx), 0, this.nx-1);
+            let j_target = clamp(Math.round(y_target * this.ny), 0, this.ny-1);
+            this.Vx[i_target + nx*j_target] += this.Vx_prev[i + nx*j];
+            this.Vy[i_target + nx*j_target] += this.Vy_prev[i + nx*j];
+            this.Density[i_target + nx*j_target] += this.Density_prev[i + nx*j];
+        } }
+    }
+
+    step() {
+        this.solveField();
+        this.extrapolateBoundary(this.Phi);
+        this.applyGravityAcc();
+        this.extrapolateBoundary(this.Vx);
+        this.extrapolateBoundary(this.Vy);
+        this.MoveDensity();
+        this.extrapolateBoundary(this.Vx);
+        this.extrapolateBoundary(this.Vy);
+        this.extrapolateBoundary(this.Density);
+    }
+}
+
+class Renderer {
+    gsys : GravitySystem;
+    canvas : HTMLCanvasElement;
+    ctx    : CanvasRenderingContext2D;
+    width  : number;
+    height : number;
+
+    xres   : number;
+    yres   : number;
+    waveScale : number = 1.0;
+    Vdynamic  : boolean = false; // flag, whether V changes over time
+
+    option_drawBottomPot : boolean = true;
+
+    data_canvas   : HTMLCanvasElement;
+    data_ctx      : CanvasRenderingContext2D;
+    data_img_data : ImageData;
+    data_pixels   : ImageData["data"];
+
+    constructor(gs : GravitySystem, canvas : HTMLCanvasElement){
+        this.gsys = gs;
+
+        this.ctx      = canvas.getContext('2d');
+        this.width    = canvas.width;
+        this.height   = canvas.height;
+
+        this.xres  = gs.nx;
+        this.yres  = gs.ny;
+        this.ctx.clearRect(0, 0, this.width, this.height);
+        this.ctx.scale(canvas.width/this.xres, canvas.height/this.yres);
+        this.ctx.imageSmoothingEnabled = false; // -> nearest-neighbor interpolation
+        
+        // temp canvas to store original values
+        this.data_canvas        = document.createElement('canvas');
+        this.data_canvas.width  = this.xres;
+        this.data_canvas.height = this.yres;
+        this.data_ctx      = this.data_canvas.getContext('2d');
+        this.data_img_data = this.data_ctx.getImageData(0,0, this.data_canvas.width, this.data_canvas.height);
+        this.data_pixels   = this.data_img_data.data;
+    }
+
+    draw() {
+        var gs = this.gsys;
+        let color     = [255, 255, 255, 255];
+        // let obs_color = hex2rgb(0x9BB6E0); //obstacle #9bb6e0
+        for (let i = 0; i < gs.n; i++){
+
+            let dens = clamp(gs.Density[i], 0, 1);
+            let color = [255, 255, 255, 255];
+            color[0] = 255 * dens;
+            color[1] = 255 * dens;
+            color[2] = 255 * dens;
+            color[3] = 255;
+
+            var p = 4*i;
+            this.data_pixels[p+0] = color[0];
+            this.data_pixels[p+1] = color[1];
+            this.data_pixels[p+2] = color[2];
+            this.data_pixels[p+3] = color[3];
+        }
+
+        // put data into temp_canvas
+        this.data_ctx.putImageData(this.data_img_data, 0, 0);
+        // draw into original canvas
+        this.ctx.drawImage(this.data_canvas, 0, 0);
+    }
+
+}
+
+export {GravitySystem, Renderer};
