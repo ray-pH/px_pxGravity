@@ -7,14 +7,35 @@ var ny = 100;
 var n_iter = 20;
 var dt = 0.01;
 var n_particle = 10000;
+const PI = 3.14159265;
 var gs = new GravitySystem(nx, ny, n_iter, dt, n_particle);
 var renderer = new Renderer(gs, canvas);
-for (let i = 0; i < n_particle; i++) {
-    gs.particles_x[i] = Math.random();
-    gs.particles_y[i] = Math.random();
-    // gs.particles_x[i] = 0.5;
-    // gs.particles_y[i] = 0.5;
+function gen_clump(cx, cy, r, vx, vy, n_part, id_start, gs) {
+    for (let i = id_start; i < id_start + n_part; i++) {
+        let rad = r * Math.random();
+        let angle = 2 * PI * Math.random();
+        let x = cx + rad * Math.cos(angle);
+        let y = cy + rad * Math.sin(angle);
+        gs.particles_x[i] = x;
+        gs.particles_y[i] = y;
+        gs.particles_vx[i] = vx;
+        gs.particles_vy[i] = vy;
+    }
 }
+// function gen_clump(cx : number, cy : number, r : number, vx : number, vy : number,
+//                    n_part : number, id_start : number, gs : GravitySystem) : void{
+//
+gen_clump(0.5, 0.5, 0.5, 0, 0, 10000, 0, gs);
+// for (let i = 0; i < n_particle; i++){
+//     let x = Math.random();
+//     let y = Math.random();
+//     gs.particles_x[i] = x;
+//     gs.particles_y[i] = y;
+//     gs.particles_vx[i] = y;
+//     gs.particles_vy[i] = x;
+//     // gs.particles_x[i] = 0.5;
+//     // gs.particles_y[i] = 0.5;
+// }
 function loop() {
     if (!paused) {
         // console.log(gs.particles_x);
