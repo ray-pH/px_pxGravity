@@ -15,7 +15,7 @@ function inRange(x : number, min : number, max : number) : boolean{
     return true;
 }
 
-const G = 1.0;
+const G = 0.06;
 const Pi = 3.14159265; //TODO: more digits
 class GravitySystem {
     Density  : Float32Array;
@@ -38,6 +38,9 @@ class GravitySystem {
 
     gx  : Float32Array;
     gy  : Float32Array;
+
+    initPx : number;
+    initPy : number;
 
     n_iter : number;
 
@@ -68,6 +71,12 @@ class GravitySystem {
 
     }
 
+    calcInitMomentum(){
+        let [px,py] = this.debug_calcMomentum();
+        this.initPx = px;
+        this.initPy = py;
+    }
+
     calcDensity(){
         this.Density.fill(0.0);
         for (let k = 0; k < this.n_particle; k++){
@@ -79,11 +88,12 @@ class GravitySystem {
         }
     }
 
+
     solveField() : void{
-        this.Phi_prev.set(this.Phi);
         let ny = this.ny;
         let h2 = 1/(this.nx * this.ny);
         for (let k = 0; k < this.n_iter; k++){
+            this.Phi_prev.set(this.Phi);
             for (let i = 1; i < this.nx-1; i++){ for (let j = 1; j < this.ny-1; j++){
                 let dd = (this.Phi_prev[(i-1) + ny*j] + this.Phi_prev[(i+1) + ny*j] +
                           this.Phi_prev[i + ny*(j-1)] + this.Phi_prev[i + ny*(j+1)]);
@@ -91,6 +101,22 @@ class GravitySystem {
             } }
         }
     }
+
+    //SOR
+    // solveField() : void{
+    //     let w  = 1.0;
+    //     let ny = this.ny;
+    //     let h2 = 1/(this.nx * this.ny);
+    //     this.Phi_prev.set(this.Phi);
+    //     for (let k = 0; k < this.n_iter; k++){
+    //         for (let i = 1; i < this.nx-1; i++){ for (let j = 1; j < this.ny-1; j++){
+    //             let dd = (this.Phi[(i-1) + ny*j] + this.Phi[(i+1) + ny*j] +
+    //                       this.Phi[i + ny*(j-1)] + this.Phi[i + ny*(j+1)]);
+    //             let R  = dd - 4*Pi*G*this.Density[i + ny*j] * h2;
+    //             this.Phi[i + ny*j] = (1.0-w)*this.Phi[i + ny*j] + w*0.25*R;
+    //         } }
+    //     }
+    // }
 
     calcGvector() : void{
         let nx = this.nx;
@@ -162,6 +188,46 @@ class GravitySystem {
         this.extrapolateBoundary(this.gy);
         this.stepMotion();
         // this.applyGravityAcc();
+    }
+
+    debug_calcMomentum() : number[] {
+        let pX = 0; let pY = 0;
+        for (let i = 0; i < this.n_particle; i++){
+            pX += this.particles_vx[i];
+            pY += this.particles_vy[i];
+        }
+        return [pX, pY];
+    }
+
+    debug_calcL2Residue() : number {
+        let sumRsq = 0;
+        let h2 = 1/(this.nx * this.ny);
+        let ny = this.ny;
+        for (let i = 1; i < this.nx-1; i++){ for (let j = 1; j < this.ny-1; j++){
+            let dd = (this.Phi[(i-1) + ny*j] + this.Phi[(i+1) + ny*j] +
+                      this.Phi[i + ny*(j-1)] + this.Phi[i + ny*(j+1)]);
+            // this.Phi[i + ny*j] = 0.25 * (dd - 4*Pi*G*this.Density[i + ny*j] * h2);
+            let Rij = 4*this.Phi[i + ny*j] + 4*Pi*G*h2*this.Density[i + ny*j] - dd;
+            sumRsq += Rij*Rij;
+        } }
+        return Math.sqrt(sumRsq);
+    }
+
+    tweak_momentum() : void{
+        let tolerance = 10;
+        let [px,py] = this.debug_calcMomentum();
+        let dpx = px - this.initPx;
+        let dpy = py - this.initPy;
+        if (Math.abs(dpx) > tolerance) {
+            let dvx = dpx/this.n_particle;
+            for (let i = 0; i < this.n_particle; i++)
+                this.particles_vx[i] -= dvx;
+        }
+        if (Math.abs(dpy) > tolerance) {
+            let dvy = dpy/this.n_particle;
+            for (let i = 0; i < this.n_particle; i++)
+                this.particles_vy[i] -= dvy;
+        }
     }
 }
 
