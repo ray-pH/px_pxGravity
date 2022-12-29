@@ -42,8 +42,8 @@ class GravitySystem {
     calcDensity() {
         this.Density.fill(0.0);
         for (let k = 0; k < this.n_particle; k++) {
-            let ii = Math.round(this.particles_x[k] * this.nx);
-            let jj = Math.round(this.particles_y[k] * this.ny);
+            let ii = Math.floor(this.particles_x[k] * this.nx);
+            let jj = Math.floor(this.particles_y[k] * this.ny);
             if (inRange(ii, 0, this.nx - 1) && inRange(jj, 0, this.ny - 1)) {
                 this.Density[ii + this.nx * jj] += this.particles_m[ii + this.nx * jj];
             }
@@ -109,8 +109,8 @@ class GravitySystem {
                 let k_y = k + len;
                 let k_vx = k + 2 * len;
                 let k_vy = k + 3 * len;
-                let i = Math.round(Arr[k_x] * this.nx);
-                let j = Math.round(Arr[k_y] * this.ny);
+                let i = Math.floor(Arr[k_x] * this.nx);
+                let j = Math.floor(Arr[k_y] * this.ny);
                 if (!(inRange(i, 0, this.nx - 1) && inRange(j, 0, this.ny - 1)))
                     continue;
                 res[k_x] = Arr[k_vx]; //Dx
