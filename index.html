@@ -2,25 +2,48 @@
 <html>
     <head>
         <meta charset="utf-8" />
-        <title>Index</title>
+        <title>px Gravity</title>
         <link rel="stylesheet" href="./style.css">
         <script type="module" src="./script/script.js"></script>
     </head>
     <body>
-        <div class="eq">
-            ∇ ⋅ g̅
-            &nbsp; =
-            &nbsp;
-            -∇² φ
-            &nbsp; =
-            &nbsp;
-            -4πG ρ
+        <div class="header">
+            <span class="title">Gravity</span>
+            <a href="">GitHub</a>
+            <a href="">PixelPhysics</a>
+            <span class="right">·</span>
         </div>
-        <div class="canvas-container">
-            <canvas id="canvas" width="500" height="500"></canvas>
+        <div class="main">
+            <div class="left-main">
+                <div class="canvas-container">
+                    <canvas id="canvas" width="500" height="500"></canvas>
+                </div>
+            </div>
+            <div class="right-main">
+                <div class="eq">
+                    ∇ ⋅ g̅
+                    &nbsp; =
+                    &nbsp;
+                    -∇² φ
+                    &nbsp; =
+                    &nbsp;
+                    -4πG ρ
+                </div>
+                <button id="button_toggle_play">pause</button>
+                <div id="debug" style="display:none">test</div>
+                <br>
+                <label for="select_scene">Scene :</label>
+                <select name="select_scene" id="select_scene">
+                    <option value="0">Parabolic Potential</option>
+                    <option value="1">Quantum Tunneling</option>
+                </select>
+                <button class="morebutton" id="button_moreScene">···</button>
+                <br>
+                <div class="hideable_container" id="container_sceneInput">
+                    <textarea id="textarea_scene"></textarea>
+                    <button id="button_applyScene">apply</button>
+                </div>
+            </div>
         </div>
-        <br><br>
-        <button id="button_toggle_play">pause</button>
-        <div id="debug">test</div>
     </body>
 </html>

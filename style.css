@@ -10,21 +10,44 @@ body {
     letter-spacing: 1px;
 }
 
+.header {
+    background-color: #2E2E2E;
+    padding: 10px;
+    color: white;
+    margin-bottom: 10px;
+}
+
+.header > a{
+    float: right;
+    margin-right: 10px;
+    margin-left: 10px;
+    color: white;
+}
+.header > a:hover, a:visited, a:link, a:active
+{
+    color: white;
+    text-decoration: none;
+}
+.header > a:hover{
+    color: #BBB;
+}
+
+.header > .right{
+    float: right;
+}
+
+.title {
+    margin-left: 10px;
+    margin-right: 10px;
+}
+
 .canvas-container {
     float: left;
-    margin: 10px;
+    margin-left: 10px;
 }
-/* .legend { */
-    /* font-family: "pixelUnicode"; */
-    /* font-size  : 20px; */
-    /* font-weight: 600; */
-/* } */
+
 .eq {
     margin-left: 10px;
-    /* font-family: "pixelUnicode"; */
-    /* font-size  : 20px; */
-    /* font-weight: 600; */
-    /* letter-spacing: 2px; */
 }
 
 button{
@@ -32,7 +55,20 @@ button{
     font-size  : 20px;
     font-weight: 600;
     letter-spacing: 1px;
-    border-width: 2px;
+    border: none;
+    /* border-width: 2px; */
+    background-color: #2E2E2E;
+    color: #FFF;
+    padding: 3px 10px 3px 10px;
+}
+button:hover {
+    cursor: pointer;
+    background-color: #666;
+    /* color: #FFF; */
+}
+.morebutton {
+    padding: 0px 10px 0px 10px;
+    height: 1em;
 }
 
 .frac {
@@ -48,4 +84,54 @@ button{
 }
 .frac span.bottom {
     border-top: 2px solid black;
+}
+
+.legend {
+    display: inline-block;
+    min-width: 65px;
+}
+
+.main {
+    display: flex;
+    flex-wrap: wrap;
+}
+
+.right-main{
+    flex-grow: 1;
+    margin-left: 10px;
+    padding: 1em;
+    background-color: #F7F7F7;
+}
+
+#select_scene {
+    font-family: "PixelUniCode";
+    font-size  : 16px;
+    height     : 28px;
+    /* font-size  : 20px; */
+    font-weight: 600;
+    letter-spacing: 1px;
+}
+/* #select_scene > option { */
+/*     font-family: "PixelUniCode"; */
+/*     font-size  : 16px; */
+/*     font-weight: 400; */
+/*     letter-spacing: 1px; */
+/* } */
+
+.hideable_container {
+    margin: 10px;
+    margin-left: 0;
+    background-color: #00000022;
+    padding: 10px;
+    display: none;
+}
+
+#textarea_scene {
+    /* font-family: "PixelUniCode"; */
+    /* font-size  : 20px; */
+    /* letter-spacing: 1px; */
+    resize : vertical;
+    width: 99%;
+    height: 10em;
+    border-width: 2px;
 }
