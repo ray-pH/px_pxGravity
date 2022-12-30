@@ -1,4 +1,6 @@
 import { GravitySystem, Renderer} from "./gravity.js"
+import { scenefun, scene_set, strScene_toFun, 
+    strScene_randomWithRotation, strScene_randomStatic, strScene_twoGroups } from "./scenes.js"
 
 var canvas : HTMLElement | null = document.getElementById("canvas");
 
@@ -7,60 +9,29 @@ var n_iter = 10;
 
 var nx = 120;
 var ny = 120;
-var n_iter = 120;
+var n_iter = 60;
 var dt = 0.01;
 
 var n_particle = 40000;
-const PI = 3.14159265;
 
 var gs = new GravitySystem(nx, ny,n_iter, dt, n_particle);
 var renderer = new Renderer(gs, canvas as HTMLCanvasElement);
 
-function gen_clump(cx : number, cy : number, r : number, vx : number, vy : number,
-                   n_part : number, id_start : number, gs : GravitySystem) : void{
-    for (let i = id_start; i < id_start + n_part; i++){
-        let rad = r * Math.sqrt(Math.random());
-        let angle = 2*PI * Math.random();
-        let x = cx + rad * Math.cos(angle);
-        let y = cy + rad * Math.sin(angle);
-        gs.particles_x[i] = x;
-        gs.particles_y[i] = y;
-        gs.particles_vx[i] = vx;
-        gs.particles_vy[i] = vy;
-    }
-}
-
-// function gen_clump(cx : number, cy : number, r : number, vx : number, vy : number,
-//                    n_part : number, id_start : number, gs : GravitySystem) : void{
-//
 // gen_clump(0.5, 0.5-0.1, 0.1, 0, 0, n_particle/2, 0, gs);
 // gen_clump(0.5, 0.5+0.1, 0.1, 0, 0, n_particle/2, n_particle/2, gs);
-gen_clump(0.5, 0.5-0.1, 0.1, -1.2, 0, n_particle/2, 0, gs);
-gen_clump(0.5, 0.5+0.1, 0.1,  1.2, 0, n_particle/2, n_particle/2, gs);
-
-// for (let i = 0; i < n_particle; i++){
-//     let x = Math.random();
-//     let y = Math.random();
-//     gs.particles_x[i] = x;
-//     gs.particles_y[i] = y;
-//     gs.particles_vx[i] = y;
-//     gs.particles_vy[i] = x;
-//     // gs.particles_x[i] = 0.5;
-//     // gs.particles_y[i] = 0.5;
-// }
-//
-// for (let i = 0; i < n_particle; i++){
-//     let x = Math.random();
-//     let y = Math.random();
-//     gs.particles_x[i] = x;
-//     gs.particles_y[i] = y;
-//     gs.particles_vx[i] = (y-0.5)*0.1;
-//     gs.particles_vy[i] = -(x-0.5)*0.1;
-// }
+// gen_clump(0.5, 0.5-0.1, 0.1, -1.2, 0, n_particle/2, 0, gs);
+// gen_clump(0.5, 0.5+0.1, 0.1,  1.2, 0, n_particle/2, n_particle/2, gs);
 
 var debug_div = document.getElementById("debug");
 debug_div.style.display = 'none';
-gs.calcInitMomentum();
+
+function setup() {
+    container_sceneInput.style.display = 'none';
+
+    let initScene = strScene_randomWithRotation;
+    scene_set(gs, strScene_toFun(initScene));
+    textarea_scene.value = initScene;
+}
 
 function loop() {
     if (!paused){
@@ -78,6 +49,30 @@ function loop() {
     requestAnimationFrame(loop);
 }
 
+// var scene = 0;
+var textarea_scene : HTMLTextAreaElement = document.getElementById("textarea_scene") as HTMLTextAreaElement;
+var button_applyScene = document.getElementById("button_applyScene");
+button_applyScene.onclick = () => {
+    let s = textarea_scene.value;
+    let f : scenefun = strScene_toFun(s);
+    scene_set(gs, f);
+}
+
+var strScenes = [strScene_randomWithRotation, strScene_randomStatic, strScene_twoGroups];
+var select_scene : HTMLSelectElement = document.getElementById("select_scene") as HTMLSelectElement;
+select_scene.onchange = () => {
+    let scene = parseInt(select_scene.value);
+    let strScene = strScenes[scene];
+    textarea_scene.value = strScene;
+    let f : scenefun = strScene_toFun(strScene);
+    scene_set(gs, f);
+}
+
+var button_moreScene     = document.getElementById("button_moreScene");
+var container_sceneInput = document.getElementById("container_sceneInput");
+button_moreScene.onclick = () => {
+    container_sceneInput.style.display = (container_sceneInput.style.display == 'none') ? 'block' : 'none';
+}
 
 var button_ppause = document.getElementById("button_toggle_play");
 button_ppause.onclick = () => {
@@ -85,4 +80,5 @@ button_ppause.onclick = () => {
     button_ppause.innerHTML = paused ? "play" : "pause";
 }
 
+setup();
 loop();
