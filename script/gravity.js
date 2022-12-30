@@ -9,7 +9,7 @@ function inRange(x, min, max) {
         return false;
     return true;
 }
-const G = 0.06;
+const G = 0.6;
 const Pi = 3.14159265; //TODO: more digits
 class GravitySystem {
     constructor(nx, ny, n_iter, dt, n_particle) {
@@ -49,35 +49,35 @@ class GravitySystem {
             }
         }
     }
+    // solveField() : void{
+    //     let ny = this.ny;
+    //     let h2 = 1/(this.nx * this.ny);
+    //     for (let k = 0; k < this.n_iter; k++){
+    //         this.Phi_prev.set(this.Phi);
+    //         for (let i = 1; i < this.nx-1; i++){ for (let j = 1; j < this.ny-1; j++){
+    //             let dd = (this.Phi_prev[(i-1) + ny*j] + this.Phi_prev[(i+1) + ny*j] +
+    //                       this.Phi_prev[i + ny*(j-1)] + this.Phi_prev[i + ny*(j+1)]);
+    //             this.Phi[i + ny*j] = 0.25 * (dd - 4*Pi*G*this.Density[i + ny*j] * h2);
+    //         } }
+    //     }
+    // }
+    //SOR
     solveField() {
+        let w = 1.9;
         let ny = this.ny;
         let h2 = 1 / (this.nx * this.ny);
+        this.Phi_prev.set(this.Phi);
         for (let k = 0; k < this.n_iter; k++) {
-            this.Phi_prev.set(this.Phi);
             for (let i = 1; i < this.nx - 1; i++) {
                 for (let j = 1; j < this.ny - 1; j++) {
-                    let dd = (this.Phi_prev[(i - 1) + ny * j] + this.Phi_prev[(i + 1) + ny * j] +
-                        this.Phi_prev[i + ny * (j - 1)] + this.Phi_prev[i + ny * (j + 1)]);
-                    this.Phi[i + ny * j] = 0.25 * (dd - 4 * Pi * G * this.Density[i + ny * j] * h2);
+                    let dd = (this.Phi[(i - 1) + ny * j] + this.Phi[(i + 1) + ny * j] +
+                        this.Phi[i + ny * (j - 1)] + this.Phi[i + ny * (j + 1)]);
+                    let R = dd - 4 * Pi * G * this.Density[i + ny * j] * h2;
+                    this.Phi[i + ny * j] = (1.0 - w) * this.Phi[i + ny * j] + w * 0.25 * R;
                 }
             }
         }
     }
-    //SOR
-    // solveField() : void{
-    //     let w  = 1.0;
-    //     let ny = this.ny;
-    //     let h2 = 1/(this.nx * this.ny);
-    //     this.Phi_prev.set(this.Phi);
-    //     for (let k = 0; k < this.n_iter; k++){
-    //         for (let i = 1; i < this.nx-1; i++){ for (let j = 1; j < this.ny-1; j++){
-    //             let dd = (this.Phi[(i-1) + ny*j] + this.Phi[(i+1) + ny*j] +
-    //                       this.Phi[i + ny*(j-1)] + this.Phi[i + ny*(j+1)]);
-    //             let R  = dd - 4*Pi*G*this.Density[i + ny*j] * h2;
-    //             this.Phi[i + ny*j] = (1.0-w)*this.Phi[i + ny*j] + w*0.25*R;
-    //         } }
-    //     }
-    // }
     calcGvector() {
         let nx = this.nx;
         for (let i = 1; i < this.nx - 1; i++) {

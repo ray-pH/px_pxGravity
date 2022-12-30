@@ -7,10 +7,10 @@ var n_iter = 10;
 
 var nx = 120;
 var ny = 120;
-var n_iter = 20;
+var n_iter = 120;
 var dt = 0.01;
 
-var n_particle = 20000;
+var n_particle = 40000;
 const PI = 3.14159265;
 
 var gs = new GravitySystem(nx, ny,n_iter, dt, n_particle);
@@ -35,8 +35,8 @@ function gen_clump(cx : number, cy : number, r : number, vx : number, vy : numbe
 //
 // gen_clump(0.5, 0.5-0.1, 0.1, 0, 0, n_particle/2, 0, gs);
 // gen_clump(0.5, 0.5+0.1, 0.1, 0, 0, n_particle/2, n_particle/2, gs);
-gen_clump(0.5, 0.5-0.1, 0.1, 0, 0, 10000, 0, gs);
-gen_clump(0.5, 0.5+0.1, 0.1, 0, 0, 10000, 10000, gs);
+gen_clump(0.5, 0.5-0.1, 0.1, -1.2, 0, n_particle/2, 0, gs);
+gen_clump(0.5, 0.5+0.1, 0.1,  1.2, 0, n_particle/2, n_particle/2, gs);
 
 // for (let i = 0; i < n_particle; i++){
 //     let x = Math.random();
@@ -59,24 +59,21 @@ gen_clump(0.5, 0.5+0.1, 0.1, 0, 0, 10000, 10000, gs);
 // }
 
 var debug_div = document.getElementById("debug");
+debug_div.style.display = 'none';
+gs.calcInitMomentum();
+
 function loop() {
     if (!paused){
-        // console.log(gs.particles_x);
-        // console.log(gs.particles_y);
-        // console.log(gs.particles_m);
-        // gs.calcDensity();
-        // console.log(gs.Density);
         gs.step();
         renderer.draw_density();
 
         // debug
         gs.tweak_momentum();
-        let [pX,pY] = gs.debug_calcMomentum();
-        let Residue = gs.debug_calcL2Residue();
-        debug_div.innerHTML = (`pX: ${pX}<br>py : ${pY}<br>R:${Residue}`);
+        // let [pX,pY] = gs.debug_calcMomentum();
+        // let Residue = gs.debug_calcL2Residue();
+        // debug_div.innerHTML = (`pX: ${pX}<br>py : ${pY}<br>R:${Residue}`);
         // debug
     }
-    
     
     requestAnimationFrame(loop);
 }
