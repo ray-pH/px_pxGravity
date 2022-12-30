@@ -4,7 +4,7 @@ var paused = false;
 var n_iter = 10;
 var nx = 120;
 var ny = 120;
-var n_iter = 20;
+var n_iter = 50;
 var dt = 0.01;
 var n_particle = 20000;
 const PI = 3.14159265;
@@ -25,7 +25,10 @@ function gen_clump(cx, cy, r, vx, vy, n_part, id_start, gs) {
 // function gen_clump(cx : number, cy : number, r : number, vx : number, vy : number,
 //                    n_part : number, id_start : number, gs : GravitySystem) : void{
 //
-// gen_clump(0.5, 0.5, 0.1, 0, 0, 10000, 0, gs);
+// gen_clump(0.5, 0.5-0.1, 0.1, 0, 0, n_particle/2, 0, gs);
+// gen_clump(0.5, 0.5+0.1, 0.1, 0, 0, n_particle/2, n_particle/2, gs);
+// gen_clump(0.5, 0.5 - 0.1, 0.1, 0.1, 0, 10000, 0, gs);
+// gen_clump(0.5, 0.5 + 0.1, 0.1, -0.1, 0, 10000, 10000, gs);
 // for (let i = 0; i < n_particle; i++){
 //     let x = Math.random();
 //     let y = Math.random();
@@ -37,13 +40,13 @@ function gen_clump(cx, cy, r, vx, vy, n_part, id_start, gs) {
 //     // gs.particles_y[i] = 0.5;
 // }
 //
-for (let i = 0; i < n_particle; i++) {
+for (let i = 0; i < n_particle; i++){
     let x = Math.random();
     let y = Math.random();
     gs.particles_x[i] = x;
     gs.particles_y[i] = y;
-    gs.particles_vx[i] = (y - 0.5) * 0.1;
-    gs.particles_vy[i] = -(x - 0.5) * 0.1;
+    gs.particles_vx[i] = (y-0.5)*0.1;
+    gs.particles_vy[i] = -(x-0.5)*0.1;
 }
 var debug_div = document.getElementById("debug");
 function loop() {
@@ -54,7 +57,7 @@ function loop() {
         // gs.calcDensity();
         // console.log(gs.Density);
         gs.step();
-        renderer.draw();
+        renderer.draw_density();
         // debug
         gs.tweak_momentum();
         let [pX, pY] = gs.debug_calcMomentum();

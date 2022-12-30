@@ -88,7 +88,6 @@ class GravitySystem {
         }
     }
 
-
     solveField() : void{
         let ny = this.ny;
         let h2 = 1/(this.nx * this.ny);
@@ -272,7 +271,36 @@ class Renderer {
         this.data_pixels   = this.data_img_data.data;
     }
 
-    draw() {
+    draw_potential() {
+        var gs = this.gsys;
+        let color     = [255, 255, 255, 255];
+        // let obs_color = hex2rgb(0x9BB6E0); //obstacle #9bb6e0
+        let maxdens = Math.max(...gs.Phi);
+        let mindens = Math.min(...gs.Phi);
+        let range   = maxdens-mindens;
+        for (let i = 0; i < gs.nxy; i++){
+
+            let dens = clamp(gs.Density[i] + mindens, 0, range)/range;
+            let color = [255, 255, 255, 255];
+            color[0] = 255 * dens;
+            color[1] = 255 * dens;
+            color[2] = 255 * dens;
+            color[3] = 255;
+
+            var p = 4*i;
+            this.data_pixels[p+0] = color[0];
+            this.data_pixels[p+1] = color[1];
+            this.data_pixels[p+2] = color[2];
+            this.data_pixels[p+3] = color[3];
+        }
+
+        // put data into temp_canvas
+        this.data_ctx.putImageData(this.data_img_data, 0, 0);
+        // draw into original canvas
+        this.ctx.drawImage(this.data_canvas, 0, 0);
+    }
+
+    draw_density() {
         var gs = this.gsys;
         let color     = [255, 255, 255, 255];
         // let obs_color = hex2rgb(0x9BB6E0); //obstacle #9bb6e0
