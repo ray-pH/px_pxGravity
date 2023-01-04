@@ -2,6 +2,7 @@ import {arr_add, arr_scale, arr_mul, arr_concat} from "./utils/arr32.js"
 import {step_euler, step_heun, step_RK4} from "./utils/solver32.js"
 // import {hex2rgb} from "./utils/color.js"
 // import {Vector2} from "./utils/vector2";
+import { evaluate_cmap} from './utils/js-colormaps.js'
 
 type diffFun = (t : number, arr : Float32Array) => Float32Array;
 
@@ -230,6 +231,12 @@ class GravitySystem {
     }
 }
 
+
+interface RenderOptions {
+    toggle_log_scale : boolean,
+    colormap      : string,
+}
+
 class Renderer {
     gsys : GravitySystem;
     canvas : HTMLCanvasElement;
@@ -300,25 +307,23 @@ class Renderer {
         this.ctx.drawImage(this.data_canvas, 0, 0);
     }
 
-    draw_density() {
-        var gs = this.gsys;
-        let color     = [255, 255, 255, 255];
-        // let obs_color = hex2rgb(0x9BB6E0); //obstacle #9bb6e0
+    draw_density(ro : RenderOptions) {
+        var gs      = this.gsys;
+        let color   = [255, 255, 255, 255];
         let maxdens = Math.max(...gs.Density);
         for (let i = 0; i < gs.nxy; i++){
 
-            let dens = clamp(gs.Density[i], 0, maxdens)/maxdens;
-            let color = [255, 255, 255, 255];
-            color[0] = 255 * dens;
-            color[1] = 255 * dens;
-            color[2] = 255 * dens;
-            color[3] = 255;
+            let s = 0;
+            if (ro.toggle_log_scale) s = Math.log(1+gs.Density[i])/Math.log(1+maxdens);
+            else                     s = gs.Density[i]/maxdens;
+            s = clamp(s,0.0,1.0)
+            color = evaluate_cmap(s, ro.colormap, false);
 
             var p = 4*i;
             this.data_pixels[p+0] = color[0];
             this.data_pixels[p+1] = color[1];
             this.data_pixels[p+2] = color[2];
-            this.data_pixels[p+3] = color[3];
+            this.data_pixels[p+3] = 255;
         }
 
         // put data into temp_canvas
@@ -329,4 +334,4 @@ class Renderer {
 
 }
 
-export {GravitySystem, Renderer};
+export {GravitySystem, Renderer, RenderOptions};

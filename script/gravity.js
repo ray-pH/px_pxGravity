@@ -1,4 +1,7 @@
 import { step_heun } from "./utils/solver32.js";
+// import {hex2rgb} from "./utils/color.js"
+// import {Vector2} from "./utils/vector2";
+import { evaluate_cmap } from './utils/js-colormaps.js';
 function clamp(x, min, max) {
     return Math.min(max, Math.max(min, x));
 }
@@ -232,23 +235,23 @@ class Renderer {
         // draw into original canvas
         this.ctx.drawImage(this.data_canvas, 0, 0);
     }
-    draw_density() {
+    draw_density(ro) {
         var gs = this.gsys;
         let color = [255, 255, 255, 255];
-        // let obs_color = hex2rgb(0x9BB6E0); //obstacle #9bb6e0
         let maxdens = Math.max(...gs.Density);
         for (let i = 0; i < gs.nxy; i++) {
-            let dens = clamp(gs.Density[i], 0, maxdens) / maxdens;
-            let color = [255, 255, 255, 255];
-            color[0] = 255 * dens;
-            color[1] = 255 * dens;
-            color[2] = 255 * dens;
-            color[3] = 255;
+            let s = 0;
+            if (ro.toggle_log_scale)
+                s = Math.log(1 + gs.Density[i]) / Math.log(1 + maxdens);
+            else
+                s = gs.Density[i] / maxdens;
+            s = clamp(s, 0.0, 1.0);
+            color = evaluate_cmap(s, ro.colormap, false);
             var p = 4 * i;
             this.data_pixels[p + 0] = color[0];
             this.data_pixels[p + 1] = color[1];
             this.data_pixels[p + 2] = color[2];
-            this.data_pixels[p + 3] = color[3];
+            this.data_pixels[p + 3] = 255;
         }
         // put data into temp_canvas
         this.data_ctx.putImageData(this.data_img_data, 0, 0);

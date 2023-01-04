@@ -1,10 +1,17 @@
 <!DOCTYPE html>
 <html>
     <head>
-        <meta charset="utf-8" />
-        <title>px Gravity</title>
-        <link rel="stylesheet" href="./style.css">
-        <script type="module" src="./script/script.js"></script>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="theme-color" content="#111111">
+    <title>px Gravity</title>
+    <link rel="stylesheet" href="./style.css">
+    <script type="module" src="./script/script.js"></script>
+
+    <meta property="og:image" content="https://raw.githubusercontent.com/ray-pH/img/rlogo.png"/>
+    <meta property="og:description" content="N Body Simulation using PM method"/>
+    <meta property="og:url"content="https://ray-ph.github.io/pixelPhysics/px_pxGravity"/>
+    <meta property="og:title" content="pxGravity">
     </head>
     <body>
         <div class="header">
@@ -44,6 +51,28 @@
                 <div class="hideable_container" id="container_sceneInput">
                     <textarea id="textarea_scene"></textarea>
                     <button id="button_applyScene">apply</button>
+                </div>
+                <br><hr>
+                Render Options
+                <button class="morebutton" id="button_moreRender">∨</button>
+                <br>
+                <div class="hideable_container" id="container_renderOption">
+                    <!-- <div style="display:grid; grid-template-columns: repeat(4, 1fr);"> -->
+                    <input type="checkbox" id="cx_toggleLog">
+                    <label for="cx_toggleLog">use log scale</label>
+                    <br>
+                    <label for="select_cmap">Color map :</label>
+                    <select name="select_cmap" id="select_cmap">
+                    </select>
+                    <!-- </div> -->
+                </div>
+                <br>
+                <br>
+                Simulation Options
+                <button class="morebutton" id="button_moreSimul">∨</button>
+                <br>
+                <div class="hideable_container" id="container_simulOption">
+                    test
                 </div>
             </div>
         </div>
