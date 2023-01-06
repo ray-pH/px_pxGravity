@@ -1,4 +1,4 @@
-import { step_heun } from "./utils/solver32.js";
+import { step_euler, step_heun, step_RK4 } from "./utils/solver32.js";
 // import {hex2rgb} from "./utils/color.js"
 // import {Vector2} from "./utils/vector2";
 import { evaluate_cmap } from './utils/js-colormaps.js';
@@ -12,10 +12,17 @@ function inRange(x, min, max) {
         return false;
     return true;
 }
-const G = 0.6;
+// const G = 0.6;
 const Pi = 3.14159265; //TODO: more digits
+const stepSolvers = {
+    'euler': step_euler,
+    'heun': step_heun,
+    'RK4': step_RK4,
+};
 class GravitySystem {
     constructor(nx, ny, n_iter, dt, n_particle) {
+        this.solver = step_heun;
+        this.G = 0.6;
         this.nx = nx;
         this.ny = ny;
         this.n_iter = n_iter;
@@ -36,6 +43,11 @@ class GravitySystem {
         this.particles_vx = new Float32Array(n_particle);
         this.particles_vy = new Float32Array(n_particle);
         this.particle_Arr = new Float32Array(n_particle * 4);
+    }
+    setG(G) { this.G = G; }
+    setSover(solver) {
+        if (solver in stepSolvers)
+            this.solver = stepSolvers[solver];
     }
     calcInitMomentum() {
         let [px, py] = this.debug_calcMomentum();
@@ -75,7 +87,7 @@ class GravitySystem {
                 for (let j = 1; j < this.ny - 1; j++) {
                     let dd = (this.Phi[(i - 1) + ny * j] + this.Phi[(i + 1) + ny * j] +
                         this.Phi[i + ny * (j - 1)] + this.Phi[i + ny * (j + 1)]);
-                    let R = dd - 4 * Pi * G * this.Density[i + ny * j] * h2;
+                    let R = dd - 4 * Pi * this.G * this.Density[i + ny * j] * h2;
                     this.Phi[i + ny * j] = (1.0 - w) * this.Phi[i + ny * j] + w * 0.25 * R;
                 }
             }
@@ -165,7 +177,7 @@ class GravitySystem {
                 let dd = (this.Phi[(i - 1) + ny * j] + this.Phi[(i + 1) + ny * j] +
                     this.Phi[i + ny * (j - 1)] + this.Phi[i + ny * (j + 1)]);
                 // this.Phi[i + ny*j] = 0.25 * (dd - 4*Pi*G*this.Density[i + ny*j] * h2);
-                let Rij = 4 * this.Phi[i + ny * j] + 4 * Pi * G * h2 * this.Density[i + ny * j] - dd;
+                let Rij = 4 * this.Phi[i + ny * j] + 4 * Pi * this.G * h2 * this.Density[i + ny * j] - dd;
                 sumRsq += Rij * Rij;
             }
         }

@@ -3,19 +3,33 @@ import { scene_set, strScene_toFun, strScene_randomWithRotation, strScene_random
 import { cmap_names } from "./utils/js-colormaps.js";
 var canvas = document.getElementById("canvas");
 var paused = false;
-var n_iter = 10;
-var nx = 120;
-var ny = 120;
-var n_iter = 60;
-var dt = 0.01;
-var n_particle = 40000;
-var gs = new GravitySystem(nx, ny, n_iter, dt, n_particle);
-var renderer = new Renderer(gs, canvas);
-var ro = {
+const so = {
+    n_grid: 120,
+    n_iter: 60,
+    dt: 0.01,
+    n_particle: 40000,
+    G: 0.6,
+};
+const ro = {
     toggle_log_scale: false,
     colormap: 'gray'
 };
 cmap_names.unshift('gray');
+var gs;
+var renderer;
+function initSystem(so) {
+    gs = new GravitySystem(so.n_grid, so.n_grid, so.n_iter, so.dt, so.n_particle);
+    gs.setG(so.G);
+    renderer = new Renderer(gs, canvas);
+}
+// var nx = 120;
+// var ny = 120;
+// var n_iter = 60;
+// var dt = 0.01;
+// var n_particle = 40000;
+// var gs = new GravitySystem(nx, ny,n_iter, dt, n_particle);
+// var renderer = new Renderer(gs, canvas as HTMLCanvasElement);
+initSystem(so);
 var debug_div = document.getElementById("debug");
 debug_div.style.display = 'none';
 function setup() {

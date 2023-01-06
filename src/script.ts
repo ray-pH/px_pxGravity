@@ -1,4 +1,4 @@
-import { GravitySystem, Renderer, RenderOptions } from "./gravity.js"
+import { GravitySystem, Renderer, RenderOptions, SimulOptions } from "./gravity.js"
 import { scenefun, scene_set, strScene_toFun, 
     strScene_randomWithRotation, strScene_randomStatic, strScene_twoGroups } from "./scenes.js"
 import { cmap_names } from "./utils/js-colormaps.js"
@@ -6,23 +6,39 @@ import { cmap_names } from "./utils/js-colormaps.js"
 var canvas : HTMLElement | null = document.getElementById("canvas");
 
 var paused = false;
-var n_iter = 10;
 
-var nx = 120;
-var ny = 120;
-var n_iter = 60;
-var dt = 0.01;
-
-var n_particle = 40000;
-
-var gs = new GravitySystem(nx, ny,n_iter, dt, n_particle);
-var renderer = new Renderer(gs, canvas as HTMLCanvasElement);
-
-var ro : RenderOptions = {
+const so : SimulOptions = {
+    n_grid : 120,
+    n_iter : 60,
+    dt     : 0.01,
+    n_particle : 40000,
+    G      : 0.6,
+}
+const ro : RenderOptions = {
     toggle_log_scale : false,
-    colormap : 'gray'
+    colormap : 'bone'
 };
-cmap_names.unshift('gray');
+cmap_names.unshift(ro.colormap);
+
+
+var gs : GravitySystem;
+var renderer : Renderer;
+function initSystem(so : SimulOptions){
+    gs = new GravitySystem(so.n_grid, so.n_grid, so.n_iter, so.dt, so.n_particle);
+    gs.setG(so.G);
+    renderer = new Renderer(gs, canvas as HTMLCanvasElement);
+}
+// var nx = 120;
+// var ny = 120;
+// var n_iter = 60;
+// var dt = 0.01;
+
+// var n_particle = 40000;
+
+// var gs = new GravitySystem(nx, ny,n_iter, dt, n_particle);
+// var renderer = new Renderer(gs, canvas as HTMLCanvasElement);
+
+initSystem(so);
 
 var debug_div = document.getElementById("debug");
 debug_div.style.display = 'none';

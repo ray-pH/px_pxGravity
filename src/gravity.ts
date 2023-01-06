@@ -1,10 +1,8 @@
 import {arr_add, arr_scale, arr_mul, arr_concat} from "./utils/arr32.js"
-import {step_euler, step_heun, step_RK4} from "./utils/solver32.js"
+import {step_euler, step_heun, step_RK4, diffFun, stepSolver} from "./utils/solver32.js"
 // import {hex2rgb} from "./utils/color.js"
 // import {Vector2} from "./utils/vector2";
 import { evaluate_cmap} from './utils/js-colormaps.js'
-
-type diffFun = (t : number, arr : Float32Array) => Float32Array;
 
 function clamp(x : number, min : number,max : number) : number{
     return Math.min(max, Math.max(min, x));
@@ -16,8 +14,25 @@ function inRange(x : number, min : number, max : number) : boolean{
     return true;
 }
 
-const G = 0.6;
+interface SimulOptions {
+    n_grid : number,
+    n_iter : number,
+    dt     : number,
+    n_particle : number,
+    G      : number,
+}
+
+// const G = 0.6;
 const Pi = 3.14159265; //TODO: more digits
+const stepSolvers : {
+    'euler' : stepSolver,
+    'heun'  : stepSolver,
+    'RK4'   : stepSolver,
+} = {
+    'euler' : step_euler,
+    'heun'  : step_heun,
+    'RK4'   : step_RK4,
+}
 class GravitySystem {
     Density  : Float32Array;
     Phi: Float32Array; // potential
@@ -36,7 +51,9 @@ class GravitySystem {
     particles_vx : Float32Array;
     particles_vy : Float32Array;
     particle_Arr : Float32Array;
+    solver : stepSolver = step_heun;
 
+    G   : number = 0.6;
     gx  : Float32Array;
     gy  : Float32Array;
 
@@ -70,6 +87,11 @@ class GravitySystem {
         this.particles_vy = new Float32Array(n_particle);
         this.particle_Arr = new Float32Array(n_particle * 4);
 
+    }
+
+    setG(G : number){ this.G = G; }
+    setSover(solver : string){
+        if (solver in stepSolvers) this.solver = stepSolvers[solver];
     }
 
     calcInitMomentum(){
@@ -112,7 +134,7 @@ class GravitySystem {
             for (let i = 1; i < this.nx-1; i++){ for (let j = 1; j < this.ny-1; j++){
                 let dd = (this.Phi[(i-1) + ny*j] + this.Phi[(i+1) + ny*j] +
                           this.Phi[i + ny*(j-1)] + this.Phi[i + ny*(j+1)]);
-                let R  = dd - 4*Pi*G*this.Density[i + ny*j] * h2;
+                let R  = dd - 4*Pi*this.G*this.Density[i + ny*j] * h2;
                 this.Phi[i + ny*j] = (1.0-w)*this.Phi[i + ny*j] + w*0.25*R;
             } }
         }
@@ -207,7 +229,7 @@ class GravitySystem {
             let dd = (this.Phi[(i-1) + ny*j] + this.Phi[(i+1) + ny*j] +
                       this.Phi[i + ny*(j-1)] + this.Phi[i + ny*(j+1)]);
             // this.Phi[i + ny*j] = 0.25 * (dd - 4*Pi*G*this.Density[i + ny*j] * h2);
-            let Rij = 4*this.Phi[i + ny*j] + 4*Pi*G*h2*this.Density[i + ny*j] - dd;
+            let Rij = 4*this.Phi[i + ny*j] + 4*Pi*this.G*h2*this.Density[i + ny*j] - dd;
             sumRsq += Rij*Rij;
         } }
         return Math.sqrt(sumRsq);
@@ -334,4 +356,4 @@ class Renderer {
 
 }
 
-export {GravitySystem, Renderer, RenderOptions};
+export {GravitySystem, Renderer, RenderOptions, SimulOptions};

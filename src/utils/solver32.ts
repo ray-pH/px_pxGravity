@@ -1,4 +1,5 @@
 type diffFun = (t : number, arr : Float32Array) => Float32Array;
+type stepSolver = (f : diffFun, ti : number, Xi : Float32Array, dt : number) => Float32Array;
 
 function arr_add(a1 : Float32Array , a2 : Float32Array) : Float32Array {
     let l : number = Math.min(a1.length, a2.length);
@@ -60,4 +61,4 @@ function step_RK4(f : diffFun, ti : number, Xi : Float32Array, dt : number) : Fl
     return arr_add(Xi, arr_scale(dt/6.0, Ksum));
 }
 
-export {step_euler, step_heun, step_RK4};
+export {step_euler, step_heun, step_RK4, diffFun, stepSolver};
