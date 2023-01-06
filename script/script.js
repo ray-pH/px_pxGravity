@@ -12,9 +12,9 @@ const so = {
 };
 const ro = {
     toggle_log_scale: false,
-    colormap: 'gray'
+    colormap: 'bone'
 };
-cmap_names.unshift('gray');
+cmap_names.unshift(ro.colormap);
 var gs;
 var renderer;
 function initSystem(so) {
@@ -67,10 +67,22 @@ button_reset.onclick = () => {
 // var scene = 0;
 var textarea_scene = document.getElementById("textarea_scene");
 var button_applyScene = document.getElementById("button_applyScene");
+var container_sceneInput = document.getElementById("container_sceneInput");
+var span_errorScene = document.getElementById("span_errorScene");
 button_applyScene.onclick = () => {
     let s = textarea_scene.value;
     let f = strScene_toFun(s);
-    scene_set(gs, f);
+    let msg = "";
+    let bgcolor = "#D6D6D6";
+    try {
+        scene_set(gs, f);
+    }
+    catch (e) {
+        msg = e.toString();
+        bgcolor = "#D63333";
+    }
+    container_sceneInput.style.backgroundColor = bgcolor;
+    span_errorScene.innerHTML = msg;
     renderer.draw_density(ro);
 };
 var strScenes = [strScene_randomWithRotation, strScene_randomStatic, strScene_twoGroups];
@@ -82,6 +94,10 @@ select_scene.onchange = () => {
     let f = strScene_toFun(strScene);
     scene_set(gs, f);
     renderer.draw_density(ro);
+    let msg = "";
+    let bgcolor = "#D6D6D6";
+    container_sceneInput.style.backgroundColor = bgcolor;
+    span_errorScene.innerHTML = msg;
 };
 function setButtonShow(buttonId, containerId) {
     let button = document.getElementById(buttonId);

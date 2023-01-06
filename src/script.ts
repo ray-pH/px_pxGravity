@@ -83,10 +83,23 @@ button_reset.onclick = () => {
 // var scene = 0;
 var textarea_scene : HTMLTextAreaElement = document.getElementById("textarea_scene") as HTMLTextAreaElement;
 var button_applyScene = document.getElementById("button_applyScene");
+var container_sceneInput = document.getElementById("container_sceneInput");
+var span_errorScene = document.getElementById("span_errorScene");
 button_applyScene.onclick = () => {
     let s = textarea_scene.value;
     let f : scenefun = strScene_toFun(s);
-    scene_set(gs, f);
+
+    let msg : string = ""; 
+    let bgcolor : string = "#D6D6D6";
+    try {
+        scene_set(gs, f);
+    } catch(e){
+        msg = e.toString();
+        bgcolor = "#D63333"
+    }
+
+    container_sceneInput.style.backgroundColor = bgcolor;
+    span_errorScene.innerHTML = msg;
     renderer.draw_density(ro);
 }
 
@@ -99,6 +112,11 @@ select_scene.onchange = () => {
     let f : scenefun = strScene_toFun(strScene);
     scene_set(gs, f);
     renderer.draw_density(ro);
+
+    let msg : string = ""; 
+    let bgcolor : string = "#D6D6D6";
+    container_sceneInput.style.backgroundColor = bgcolor;
+    span_errorScene.innerHTML = msg;
 }
 
 function setButtonShow(buttonId : string, containerId : string){
