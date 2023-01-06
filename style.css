@@ -3,6 +3,9 @@
     src: url("./fonts/pixel_unicode/Pixel-UniCode.ttf");
 }
 
+canvas{
+    width: 100%;
+}
 body {
     font-family: "pixelUnicode";
     font-size  : 20px;
@@ -43,7 +46,7 @@ body {
 
 .canvas-container {
     float: left;
-    margin-left: 10px;
+    /* margin-left: 10px; */
 }
 
 .eq {
@@ -94,11 +97,12 @@ button:hover {
 .main {
     display: flex;
     flex-wrap: wrap;
+    gap: 10px;
 }
 
 .right-main{
     flex-grow: 1;
-    margin-left: 10px;
+    /* margin-left: 10px; */
     padding: 1em;
     background-color: #F7F7F7;
 }
