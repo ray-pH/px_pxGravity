@@ -28,6 +28,7 @@ for (let i = 0; i < n_particle; i++){
     py[i] = y;
     vx[i] = (y-0.5)*1;
     vy[i] = -(x-0.5)*1;
+    m[i]  = 1.0;
 }
 `
 
@@ -40,6 +41,7 @@ for (let i = 0; i < n_particle; i++){
     py[i] = y;
     vx[i] = 0;
     vy[i] = 0;
+    m[i]  = 1.0;
 }
 `
 
