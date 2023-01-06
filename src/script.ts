@@ -100,7 +100,10 @@ setButtonShow("button_moreSimul" , "container_simulOption");
 
 function attachCheckbox(checkboxId : string, opt : RenderOptions, component : string){
     let checkbox = document.getElementById(checkboxId) as HTMLInputElement;
-    checkbox.onchange = ()=>{ opt[component] = checkbox.checked };
+    checkbox.onchange = ()=>{ 
+        opt[component] = checkbox.checked 
+        renderer.draw_density(ro);
+    };
 }
 attachCheckbox("cx_toggleLog", ro, "toggle_log_scale");
 

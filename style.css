@@ -107,7 +107,7 @@ button:hover {
     background-color: #F7F7F7;
 }
 
-#select_scene {
+.select {
     font-family: "PixelUniCode";
     font-size  : 16px;
     height     : 28px;

@@ -83,7 +83,10 @@ setButtonShow("button_moreRender", "container_renderOption");
 setButtonShow("button_moreSimul", "container_simulOption");
 function attachCheckbox(checkboxId, opt, component) {
     let checkbox = document.getElementById(checkboxId);
-    checkbox.onchange = () => { opt[component] = checkbox.checked; };
+    checkbox.onchange = () => {
+        opt[component] = checkbox.checked;
+        renderer.draw_density(ro);
+    };
 }
 attachCheckbox("cx_toggleLog", ro, "toggle_log_scale");
 var select_cmap = document.getElementById("select_cmap");
