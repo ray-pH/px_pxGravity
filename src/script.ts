@@ -80,7 +80,11 @@ select_scene.onchange = () => {
 function setButtonShow(buttonId : string, containerId : string){
     let button     = document.getElementById(buttonId);
     let container  = document.getElementById(containerId);
-    button.onclick = ()=>{container.style.display = (container.style.display == 'none') ? 'block' : 'none';};
+    button.onclick = ()=>{
+        let changeto   = (container.style.display == 'none') ? 'block' : 'none';
+        button.innerHTML = (changeto == 'none') ? '∨' : '∧';
+        container.style.display = changeto;
+    };
 }
 setButtonShow("button_moreScene" , "container_sceneInput");
 setButtonShow("button_moreRender", "container_renderOption");
