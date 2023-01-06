@@ -20,7 +20,6 @@ const ro : RenderOptions = {
 };
 cmap_names.unshift(ro.colormap);
 
-
 var gs : GravitySystem;
 var renderer : Renderer;
 function initSystem(so : SimulOptions){
@@ -149,6 +148,46 @@ select_cmap.onchange = () => {
     ro.colormap = select_cmap.value;
     renderer.draw_density(ro);
 }
+
+const tx_SOcomponent = {
+    "tx_n_grid": "n_grid",
+    "tx_dt"    : "dt",
+    "tx_n_particle" : "n_particle",
+    "tx_G" : "G",
+}
+for (let tx_id in tx_SOcomponent){
+    let comp = tx_SOcomponent[tx_id];
+    let tx_element : HTMLInputElement = document.getElementById(tx_id) as HTMLInputElement;
+    tx_element.value = so[comp];
+}
+var button_applySimulOp = document.getElementById("button_applySimulOp");
+button_applySimulOp.onclick = () => {
+    for (let tx_id in tx_SOcomponent){
+        let comp = tx_SOcomponent[tx_id];
+        let tx_element : HTMLInputElement = document.getElementById(tx_id) as HTMLInputElement;
+        let parsed : number = parseFloat(tx_element.value);
+        if (isNaN(parsed)){
+            console.log("nana");
+            return;
+        }
+        so[comp] = parsed;
+    }
+    initSystem(so);
+
+    let s = textarea_scene.value;
+    let f : scenefun = strScene_toFun(s);
+    let msg : string = ""; 
+    let bgcolor : string = "#D6D6D6";
+    try {
+        scene_set(gs, f);
+    } catch(e){
+        msg = e.toString();
+        bgcolor = "#D63333"
+    }
+    container_sceneInput.style.backgroundColor = bgcolor;
+    span_errorScene.innerHTML = msg;
+    renderer.draw_density(ro);
+};
 
 setup();
 loop();

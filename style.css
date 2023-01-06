@@ -140,3 +140,8 @@ button:hover {
     height: 10em;
     border-width: 2px;
 }
+
+.grid_container{
+    display: grid;
+    grid-template-columns: 6em auto;
+}

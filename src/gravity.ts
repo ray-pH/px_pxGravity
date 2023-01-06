@@ -289,6 +289,7 @@ class Renderer {
 
         this.xres  = gs.nx;
         this.yres  = gs.ny;
+        this.ctx.setTransform(1, 0, 0, 1, 0, 0);
         this.ctx.clearRect(0, 0, this.width, this.height);
         this.ctx.scale(canvas.width/this.xres, canvas.height/this.yres);
         this.ctx.imageSmoothingEnabled = false; // -> nearest-neighbor interpolation

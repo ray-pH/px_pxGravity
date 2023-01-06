@@ -40,6 +40,8 @@ class GravitySystem {
         this.particles_m.fill(1.0);
         this.particles_x = new Float32Array(n_particle);
         this.particles_y = new Float32Array(n_particle);
+        this.particles_x.fill(0.5);
+        this.particles_y.fill(0.5);
         this.particles_vx = new Float32Array(n_particle);
         this.particles_vy = new Float32Array(n_particle);
         this.particle_Arr = new Float32Array(n_particle * 4);
@@ -211,6 +213,7 @@ class Renderer {
         this.height = canvas.height;
         this.xres = gs.nx;
         this.yres = gs.ny;
+        this.ctx.setTransform(1, 0, 0, 1, 0, 0);
         this.ctx.clearRect(0, 0, this.width, this.height);
         this.ctx.scale(canvas.width / this.xres, canvas.height / this.yres);
         this.ctx.imageSmoothingEnabled = false; // -> nearest-neighbor interpolation

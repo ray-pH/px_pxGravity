@@ -73,8 +73,28 @@
                 Simulation Options
                 <button class="morebutton" id="button_moreSimul">∨</button>
                 <br>
+                <!-- const so : SimulOptions = { -->
+                <!--     n_grid : 120, -->
+                <!--     n_iter : 60, -->
+                <!--     dt     : 0.01, -->
+                <!--     n_particle : 40000, -->
+                <!--     G      : 0.6, -->
+                <!-- } -->
                 <div class="hideable_container" id="container_simulOption">
-                    test
+                    <div class="grid_container">
+                        <label for="tx_n_grid">N grid</label>
+                        <input type="text" id="tx_n_grid" name="tx_n_grid">
+                        <!-- <label for="tx_n_iter">N iter</label> -->
+                        <!-- <input type="text" id="tx_n_iter" name="tx_n_iter"><br> -->
+                        <label for="tx_n_particle">N particle</label>
+                        <input type="text" id="tx_n_particle" name="tx_n_particle">
+                        <label for="tx_dt">dt</label>
+                        <input type="text" id="tx_dt" name="tx_dt">
+                        <label for="tx_G">G constant</label>
+                        <input type="text" id="tx_G" name="tx_G">
+                    </div><br>
+                    <button id="button_applySimulOp">apply</button>
+                    <div id="span_errorSimulOp"></div>
                 </div>
             </div>
         </div>
