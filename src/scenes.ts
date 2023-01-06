@@ -11,6 +11,7 @@ function scene_set(gs : GravitySystem, sf : scenefun){
     gs.Phi.fill(0.0);
     sf(px,py,vx,vy,m);
     gs.calcInitMomentum();
+    gs.calcDensity();
 }
 
 function strScene_toFun(s : string) : scenefun {

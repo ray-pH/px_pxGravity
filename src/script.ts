@@ -21,7 +21,8 @@ var renderer = new Renderer(gs, canvas as HTMLCanvasElement);
 var ro : RenderOptions = {
     toggle_log_scale : false,
     colormap : 'gray'
-}
+};
+cmap_names.unshift('gray');
 
 var debug_div = document.getElementById("debug");
 debug_div.style.display = 'none';
@@ -39,7 +40,6 @@ function loop() {
     if (!paused){
         gs.step();
         renderer.draw_density(ro);
-
         // debug
         gs.tweak_momentum();
         // let [pX,pY] = gs.debug_calcMomentum();
@@ -47,15 +47,21 @@ function loop() {
         // debug_div.innerHTML = (`pX: ${pX}<br>py : ${pY}<br>R:${Residue}`);
         // debug
     }
-    
     requestAnimationFrame(loop);
 }
-
 
 var button_ppause = document.getElementById("button_toggle_play");
 button_ppause.onclick = () => {
     paused = !paused;
     button_ppause.innerHTML = paused ? "play" : "pause";
+}
+
+var button_reset = document.getElementById("button_reset");
+button_reset.onclick = () => {
+    let s = textarea_scene.value;
+    let f : scenefun = strScene_toFun(s);
+    scene_set(gs, f);
+    renderer.draw_density(ro);
 }
 
 // var scene = 0;
@@ -65,6 +71,7 @@ button_applyScene.onclick = () => {
     let s = textarea_scene.value;
     let f : scenefun = strScene_toFun(s);
     scene_set(gs, f);
+    renderer.draw_density(ro);
 }
 
 var strScenes = [strScene_randomWithRotation, strScene_randomStatic, strScene_twoGroups];
@@ -75,6 +82,7 @@ select_scene.onchange = () => {
     textarea_scene.value = strScene;
     let f : scenefun = strScene_toFun(strScene);
     scene_set(gs, f);
+    renderer.draw_density(ro);
 }
 
 function setButtonShow(buttonId : string, containerId : string){
@@ -102,6 +110,7 @@ for (const cname of cmap_names){
 }
 select_cmap.onchange = () => {
     ro.colormap = select_cmap.value;
+    renderer.draw_density(ro);
 }
 
 setup();

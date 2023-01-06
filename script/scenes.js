@@ -7,6 +7,7 @@ function scene_set(gs, sf) {
     gs.Phi.fill(0.0);
     sf(px, py, vx, vy, m);
     gs.calcInitMomentum();
+    gs.calcDensity();
 }
 function strScene_toFun(s) {
     let f = new Function('px', 'py', 'vx', 'vy', 'm', "\"use strict\";\n" + s);

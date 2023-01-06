@@ -15,6 +15,7 @@ var ro = {
     toggle_log_scale: false,
     colormap: 'gray'
 };
+cmap_names.unshift('gray');
 var debug_div = document.getElementById("debug");
 debug_div.style.display = 'none';
 function setup() {
@@ -42,6 +43,13 @@ button_ppause.onclick = () => {
     paused = !paused;
     button_ppause.innerHTML = paused ? "play" : "pause";
 };
+var button_reset = document.getElementById("button_reset");
+button_reset.onclick = () => {
+    let s = textarea_scene.value;
+    let f = strScene_toFun(s);
+    scene_set(gs, f);
+    renderer.draw_density(ro);
+};
 // var scene = 0;
 var textarea_scene = document.getElementById("textarea_scene");
 var button_applyScene = document.getElementById("button_applyScene");
@@ -49,6 +57,7 @@ button_applyScene.onclick = () => {
     let s = textarea_scene.value;
     let f = strScene_toFun(s);
     scene_set(gs, f);
+    renderer.draw_density(ro);
 };
 var strScenes = [strScene_randomWithRotation, strScene_randomStatic, strScene_twoGroups];
 var select_scene = document.getElementById("select_scene");
@@ -58,6 +67,7 @@ select_scene.onchange = () => {
     textarea_scene.value = strScene;
     let f = strScene_toFun(strScene);
     scene_set(gs, f);
+    renderer.draw_density(ro);
 };
 function setButtonShow(buttonId, containerId) {
     let button = document.getElementById(buttonId);
@@ -82,6 +92,7 @@ for (const cname of cmap_names) {
 }
 select_cmap.onchange = () => {
     ro.colormap = select_cmap.value;
+    renderer.draw_density(ro);
 };
 setup();
 loop();
