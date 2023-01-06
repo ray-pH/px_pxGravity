@@ -83,6 +83,8 @@ class GravitySystem {
         this.particles_m.fill(1.0);
         this.particles_x  = new Float32Array(n_particle);
         this.particles_y  = new Float32Array(n_particle);
+        this.particles_x.fill(0.5);
+        this.particles_y.fill(0.5);
         this.particles_vx = new Float32Array(n_particle);
         this.particles_vy = new Float32Array(n_particle);
         this.particle_Arr = new Float32Array(n_particle * 4);
