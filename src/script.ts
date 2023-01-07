@@ -166,10 +166,7 @@ button_applySimulOp.onclick = () => {
         let comp = tx_SOcomponent[tx_id];
         let tx_element : HTMLInputElement = document.getElementById(tx_id) as HTMLInputElement;
         let parsed : number = parseFloat(tx_element.value);
-        if (isNaN(parsed)){
-            console.log("nana");
-            return;
-        }
+        if (isNaN(parsed)) return;
         so[comp] = parsed;
     }
     initSystem(so);
