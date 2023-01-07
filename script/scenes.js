@@ -21,6 +21,7 @@ for (let i = 0; i < n_particle; i++){
     py[i] = y;
     vx[i] = (y-0.5)*1;
     vy[i] = -(x-0.5)*1;
+    m[i]  = 1.0;
 }
 `;
 let strScene_randomStatic = `let n_particle = px.length;
@@ -31,6 +32,7 @@ for (let i = 0; i < n_particle; i++){
     py[i] = y;
     vx[i] = 0;
     vy[i] = 0;
+    m[i]  = 1.0;
 }
 `;
 let strScene_twoGroups = `let n_particle = px.length;

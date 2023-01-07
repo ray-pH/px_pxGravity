@@ -5,6 +5,7 @@ import { cmap_names } from "./utils/js-colormaps.js"
 
 var canvas : HTMLElement | null = document.getElementById("canvas");
 
+var lastValid_strScene : string = "";
 var paused = false;
 
 const so : SimulOptions = {
@@ -27,26 +28,17 @@ function initSystem(so : SimulOptions){
     gs.setG(so.G);
     renderer = new Renderer(gs, canvas as HTMLCanvasElement);
 }
-// var nx = 120;
-// var ny = 120;
-// var n_iter = 60;
-// var dt = 0.01;
-
-// var n_particle = 40000;
-
-// var gs = new GravitySystem(nx, ny,n_iter, dt, n_particle);
-// var renderer = new Renderer(gs, canvas as HTMLCanvasElement);
-
-initSystem(so);
 
 var debug_div = document.getElementById("debug");
 debug_div.style.display = 'none';
 
 function setup() {
+    initSystem(so);
     let containerIds = ["container_sceneInput", "container_renderOption", "container_simulOption"]
     containerIds.forEach((id : string) => { document.getElementById(id).style.display = 'none'; })
 
     let initScene = strScene_randomWithRotation;
+    lastValid_strScene = initScene;
     scene_set(gs, strScene_toFun(initScene));
     textarea_scene.value = initScene;
 }
@@ -73,8 +65,7 @@ button_ppause.onclick = () => {
 
 var button_reset = document.getElementById("button_reset");
 button_reset.onclick = () => {
-    let s = textarea_scene.value;
-    let f : scenefun = strScene_toFun(s);
+    let f : scenefun = strScene_toFun(lastValid_strScene);
     scene_set(gs, f);
     renderer.draw_density(ro);
 }
@@ -97,6 +88,7 @@ button_applyScene.onclick = () => {
         bgcolor = "#D63333"
     }
 
+    if (msg == "") lastValid_strScene = s;
     container_sceneInput.style.backgroundColor = bgcolor;
     span_errorScene.innerHTML = msg;
     renderer.draw_density(ro);
@@ -107,6 +99,7 @@ var select_scene : HTMLSelectElement = document.getElementById("select_scene") a
 select_scene.onchange = () => {
     let scene = parseInt(select_scene.value);
     let strScene = strScenes[scene];
+    lastValid_strScene = strScene;
     textarea_scene.value = strScene;
     let f : scenefun = strScene_toFun(strScene);
     scene_set(gs, f);
@@ -171,18 +164,8 @@ button_applySimulOp.onclick = () => {
     }
     initSystem(so);
 
-    let s = textarea_scene.value;
-    let f : scenefun = strScene_toFun(s);
-    let msg : string = ""; 
-    let bgcolor : string = "#D6D6D6";
-    try {
-        scene_set(gs, f);
-    } catch(e){
-        msg = e.toString();
-        bgcolor = "#D63333"
-    }
-    container_sceneInput.style.backgroundColor = bgcolor;
-    span_errorScene.innerHTML = msg;
+    let f : scenefun = strScene_toFun(lastValid_strScene);
+    scene_set(gs, f);
     renderer.draw_density(ro);
 };
 

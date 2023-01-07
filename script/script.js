@@ -2,6 +2,7 @@ import { GravitySystem, Renderer } from "./gravity.js";
 import { scene_set, strScene_toFun, strScene_randomWithRotation, strScene_randomStatic, strScene_twoGroups } from "./scenes.js";
 import { cmap_names } from "./utils/js-colormaps.js";
 var canvas = document.getElementById("canvas");
+var lastValid_strScene = "";
 var paused = false;
 const so = {
     n_grid: 120,
@@ -22,20 +23,14 @@ function initSystem(so) {
     gs.setG(so.G);
     renderer = new Renderer(gs, canvas);
 }
-// var nx = 120;
-// var ny = 120;
-// var n_iter = 60;
-// var dt = 0.01;
-// var n_particle = 40000;
-// var gs = new GravitySystem(nx, ny,n_iter, dt, n_particle);
-// var renderer = new Renderer(gs, canvas as HTMLCanvasElement);
-initSystem(so);
 var debug_div = document.getElementById("debug");
 debug_div.style.display = 'none';
 function setup() {
+    initSystem(so);
     let containerIds = ["container_sceneInput", "container_renderOption", "container_simulOption"];
     containerIds.forEach((id) => { document.getElementById(id).style.display = 'none'; });
     let initScene = strScene_randomWithRotation;
+    lastValid_strScene = initScene;
     scene_set(gs, strScene_toFun(initScene));
     textarea_scene.value = initScene;
 }
@@ -59,8 +54,7 @@ button_ppause.onclick = () => {
 };
 var button_reset = document.getElementById("button_reset");
 button_reset.onclick = () => {
-    let s = textarea_scene.value;
-    let f = strScene_toFun(s);
+    let f = strScene_toFun(lastValid_strScene);
     scene_set(gs, f);
     renderer.draw_density(ro);
 };
@@ -81,6 +75,8 @@ button_applyScene.onclick = () => {
         msg = e.toString();
         bgcolor = "#D63333";
     }
+    if (msg == "")
+        lastValid_strScene = s;
     container_sceneInput.style.backgroundColor = bgcolor;
     span_errorScene.innerHTML = msg;
     renderer.draw_density(ro);
@@ -90,6 +86,7 @@ var select_scene = document.getElementById("select_scene");
 select_scene.onchange = () => {
     let scene = parseInt(select_scene.value);
     let strScene = strScenes[scene];
+    lastValid_strScene = strScene;
     textarea_scene.value = strScene;
     let f = strScene_toFun(strScene);
     scene_set(gs, f);
@@ -144,26 +141,13 @@ button_applySimulOp.onclick = () => {
         let comp = tx_SOcomponent[tx_id];
         let tx_element = document.getElementById(tx_id);
         let parsed = parseFloat(tx_element.value);
-        if (isNaN(parsed)) {
-            console.log("nana");
+        if (isNaN(parsed))
             return;
-        }
         so[comp] = parsed;
     }
     initSystem(so);
-    let s = textarea_scene.value;
-    let f = strScene_toFun(s);
-    let msg = "";
-    let bgcolor = "#D6D6D6";
-    try {
-        scene_set(gs, f);
-    }
-    catch (e) {
-        msg = e.toString();
-        bgcolor = "#D63333";
-    }
-    container_sceneInput.style.backgroundColor = bgcolor;
-    span_errorScene.innerHTML = msg;
+    let f = strScene_toFun(lastValid_strScene);
+    scene_set(gs, f);
     renderer.draw_density(ro);
 };
 setup();
