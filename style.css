@@ -145,3 +145,11 @@ button:hover {
     display: grid;
     grid-template-columns: 6em auto;
 }
+
+.grid_container > input {
+    font-family: "PixelUniCode";
+    font-size  : 16px;
+    /* font-size  : 20px; */
+    font-weight: 600;
+    letter-spacing: 1px;
+}
