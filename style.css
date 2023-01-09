@@ -49,6 +49,17 @@ body {
     /* margin-left: 10px; */
 }
 
+#container_sceneHelp{
+    display: none;
+}
+.descvar, .desctype {
+    font-family: Arial, Helvetica, sans-serif;
+    font-size: 12px;
+    font-weight: normal;
+}
+.desctype{
+    color: #666;
+}
 .eq {
     margin-left: 10px;
     margin-right: 10px;

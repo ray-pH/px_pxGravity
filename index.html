@@ -61,7 +61,26 @@
                 <div class="hideable_container" id="container_sceneInput">
                     <textarea id="textarea_scene"></textarea>
                     <button id="button_applyScene">apply</button>
+                    <button id="button_helpScene">?</button>
                     <div id="span_errorScene"></div>
+                    <div id="container_sceneHelp">
+                        <br>
+                        Available variables:<br>
+                        <span class="descvar">n_particle</span><span class="desctype"> (number)</span>
+                        : number of particle (N particle in Simul Option)
+                        <br><span class="descvar">px</span><span class="desctype"> (Float32Array)</span>
+                        : x position of the particles
+                        <br><span class="descvar">py</span><span class="desctype"> (Float32Array)</span>
+                        : y position of the particles
+                        <br><span class="descvar">vx</span><span class="desctype"> (Float32Array)</span>
+                        : x velocity of the particles
+                        <br><span class="descvar">vy</span><span class="desctype"> (Float32Array)</span>
+                        : y velocity of the particles
+                        <br><span class="descvar">m</span><span class="desctype"> (Float32Array)</span>
+                        : mass of the particles
+                        <br><span class="descvar">Math</span><span class="desctype"> (object)</span>
+                        : "library" of mathematical functions (javascript)
+                    </div>
                 </div>
                 <br><hr>
                 <label for="button_moreRender">Render Options</label>

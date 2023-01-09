@@ -5,16 +5,15 @@ function scene_set(gs, sf) {
     let vy = gs.particles_vy;
     let m = gs.particles_m;
     gs.Phi.fill(0.0);
-    sf(px, py, vx, vy, m);
+    sf(px, py, vx, vy, m, gs.n_particle);
     gs.calcInitMomentum();
     gs.calcDensity();
 }
 function strScene_toFun(s) {
-    let f = new Function('px', 'py', 'vx', 'vy', 'm', "\"use strict\";\n" + s);
+    let f = new Function('px', 'py', 'vx', 'vy', 'm', 'n_particle', "\"use strict\";\n" + s);
     return f;
 }
-let strScene_randomWithRotation = `let n_particle = px.length;
-for (let i = 0; i < n_particle; i++){
+let strScene_randomWithRotation = `for (let i = 0; i < n_particle; i++){
     let x = Math.random();
     let y = Math.random();
     px[i] = x;
@@ -24,8 +23,7 @@ for (let i = 0; i < n_particle; i++){
     m[i]  = 1.0;
 }
 `;
-let strScene_randomStatic = `let n_particle = px.length;
-for (let i = 0; i < n_particle; i++){
+let strScene_randomStatic = `for (let i = 0; i < n_particle; i++){
     let x = Math.random();
     let y = Math.random();
     px[i] = x;
@@ -35,12 +33,10 @@ for (let i = 0; i < n_particle; i++){
     m[i]  = 1.0;
 }
 `;
-let strScene_twoGroups = `let n_particle = px.length;
-const PI = 3.14159265;
-function gen_clump(cx, cy, r, vx_val, vy_val, id_from, id_to){
+let strScene_twoGroups = `function gen_clump(cx, cy, r, vx_val, vy_val, id_from, id_to){
     for (let i = id_from; i < id_to; i++){
         let rad = r * Math.sqrt(Math.random());
-        let angle = 2*PI * Math.random();
+        let angle = 2* Math.PI * Math.random();
         let x = cx + rad * Math.cos(angle);
         let y = cy + rad * Math.sin(angle);
         px[i] = x;
