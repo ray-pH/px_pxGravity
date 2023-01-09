@@ -115,6 +115,7 @@ button:hover {
 
 .right-main{
     flex-grow: 1;
+    flex-basis: 380px;
     /* margin-left: 10px; */
     padding: 1em;
     background-color: #F7F7F7;
