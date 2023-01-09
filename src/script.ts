@@ -120,6 +120,7 @@ function setButtonShow(buttonId : string, containerId : string){
         container.style.display = changeto;
     };
 }
+setButtonShow("button_moreDesc"  , "container_desc");
 setButtonShow("button_moreScene" , "container_sceneInput");
 setButtonShow("button_moreRender", "container_renderOption");
 setButtonShow("button_moreSimul" , "container_simulOption");

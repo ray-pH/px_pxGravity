@@ -105,6 +105,7 @@ function setButtonShow(buttonId, containerId) {
         container.style.display = changeto;
     };
 }
+setButtonShow("button_moreDesc", "container_desc");
 setButtonShow("button_moreScene", "container_sceneInput");
 setButtonShow("button_moreRender", "container_renderOption");
 setButtonShow("button_moreSimul", "container_simulOption");

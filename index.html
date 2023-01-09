@@ -27,6 +27,7 @@
                 </div>
             </div>
             <div class="right-main">
+                <label for="button_moreDesc">
                 <div class="eq">
                     ∇ ⋅ g̅
                     &nbsp; =
@@ -36,6 +37,14 @@
                     &nbsp;
                     -4πG ρ
                 </div>
+                </label>
+                <!-- <label for="button_moreRender">Render Options</label> -->
+                <button class="morebutton" id="button_moreDesc">∧</button>
+                <br>
+                <div class="hideable_container showfirst" id="container_desc">
+                    Gravitational N Body Simulation using PM (Particle-Mesh) Method
+                </div>
+                <br>
                 <button id="button_toggle_play">pause</button>
                 <button id="button_reset">reset</button>
                 <div id="debug" style="display:none">test</div>
@@ -55,7 +64,7 @@
                     <div id="span_errorScene"></div>
                 </div>
                 <br><hr>
-                Render Options
+                <label for="button_moreRender">Render Options</label>
                 <button class="morebutton" id="button_moreRender">∨</button>
                 <br>
                 <div class="hideable_container" id="container_renderOption">
@@ -70,7 +79,7 @@
                 </div>
                 <br>
                 <!-- <br> -->
-                Simulation Options
+                <label for="button_moreSimul">Simulation Options</label>
                 <button class="morebutton" id="button_moreSimul">∨</button>
                 <br>
                 <!-- const so : SimulOptions = { -->
