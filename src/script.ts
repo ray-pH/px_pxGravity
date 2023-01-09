@@ -2,6 +2,7 @@ import { GravitySystem, Renderer, RenderOptions, SimulOptions } from "./gravity.
 import { scenefun, scene_set, strScene_toFun, 
     strScene_randomWithRotation, strScene_randomStatic, strScene_twoGroups } from "./scenes.js"
 import { cmap_names } from "./utils/js-colormaps.js"
+import { Base64 } from "./utils/base64.js"
 
 var canvas : HTMLElement | null = document.getElementById("canvas");
 
@@ -94,7 +95,7 @@ button_applyScene.onclick = () => {
     renderer.draw_density(ro);
 }
 
-var strScenes = [strScene_randomWithRotation, strScene_randomStatic, strScene_twoGroups];
+var strScenes = [strScene_randomWithRotation, strScene_randomStatic, strScene_twoGroups, ''];
 var select_scene : HTMLSelectElement = document.getElementById("select_scene") as HTMLSelectElement;
 select_scene.onchange = () => {
     let scene = parseInt(select_scene.value);
@@ -109,6 +110,21 @@ select_scene.onchange = () => {
     let bgcolor : string = "#D6D6D6";
     container_sceneInput.style.backgroundColor = bgcolor;
     span_errorScene.innerHTML = msg;
+}
+
+var button_shareScene : HTMLButtonElement = document.getElementById("button_shareScene") as HTMLButtonElement;
+var span_shareScene   : HTMLDivElement    = document.getElementById("span_shareScene") as HTMLDivElement;
+var input_shareScene  : HTMLInputElement  = document.getElementById("input_shareScene") as HTMLInputElement;
+button_shareScene.onclick = () => {
+    // let queryString : Window['location']['search'] = window.location.search;
+    // const urlParams   : URLSearchParams = new URLSearchParams(queryString);
+    // const urlstrScene : string = urlParams.get('sc');
+    // console.log(urlstrScene);
+    let siteURI    : string = window.location.href.split('?')[0];
+    let strScene   : string = textarea_scene.value;
+    let strScene64 : string = Base64.encode(strScene);
+    span_shareScene.style.display = "grid";
+    input_shareScene.value = siteURI + "?scene=" + strScene64;
 }
 
 function setButtonShow(buttonId : string, containerId : string, sOpen : string, sClosed : string){

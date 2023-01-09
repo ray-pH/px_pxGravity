@@ -1,6 +1,7 @@
 import { GravitySystem, Renderer } from "./gravity.js";
 import { scene_set, strScene_toFun, strScene_randomWithRotation, strScene_randomStatic, strScene_twoGroups } from "./scenes.js";
 import { cmap_names } from "./utils/js-colormaps.js";
+import { Base64 } from "./utils/base64.js";
 var canvas = document.getElementById("canvas");
 var lastValid_strScene = "";
 var paused = false;
@@ -81,7 +82,7 @@ button_applyScene.onclick = () => {
     span_errorScene.innerHTML = msg;
     renderer.draw_density(ro);
 };
-var strScenes = [strScene_randomWithRotation, strScene_randomStatic, strScene_twoGroups];
+var strScenes = [strScene_randomWithRotation, strScene_randomStatic, strScene_twoGroups, ''];
 var select_scene = document.getElementById("select_scene");
 select_scene.onchange = () => {
     let scene = parseInt(select_scene.value);
@@ -95,6 +96,20 @@ select_scene.onchange = () => {
     let bgcolor = "#D6D6D6";
     container_sceneInput.style.backgroundColor = bgcolor;
     span_errorScene.innerHTML = msg;
+};
+var button_shareScene = document.getElementById("button_shareScene");
+var span_shareScene = document.getElementById("span_shareScene");
+var input_shareScene = document.getElementById("input_shareScene");
+button_shareScene.onclick = () => {
+    // let queryString : Window['location']['search'] = window.location.search;
+    // const urlParams   : URLSearchParams = new URLSearchParams(queryString);
+    // const urlstrScene : string = urlParams.get('sc');
+    // console.log(urlstrScene);
+    let siteURI = window.location.href.split('?')[0];
+    let strScene = textarea_scene.value;
+    let strScene64 = Base64.encode(strScene);
+    span_shareScene.style.display = "grid";
+    input_shareScene.value = siteURI + "?scene=" + strScene64;
 };
 function setButtonShow(buttonId, containerId, sOpen, sClosed) {
     let button = document.getElementById(buttonId);
