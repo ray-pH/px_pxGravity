@@ -1,7 +1,6 @@
 import { GravitySystem, Renderer } from "./gravity.js";
 import { scene_set, strScene_toFun, strScene_randomWithRotation, strScene_randomStatic, strScene_twoGroups } from "./scenes.js";
 import { cmap_names } from "./utils/js-colormaps.js";
-import { Base64 } from "./utils/base64.js";
 var canvas = document.getElementById("canvas");
 var lastValid_strScene = "";
 var paused = false;
@@ -26,10 +25,34 @@ function initSystem(so) {
 }
 var debug_div = document.getElementById("debug");
 debug_div.style.display = 'none';
+function readSceneFromURL() {
+    let queryString = window.location.search;
+    let urlParams = new URLSearchParams(queryString);
+    let urlstrScene = urlParams.get('scene');
+    if (urlstrScene == null)
+        return false;
+    let parsedstrScene = "";
+    try {
+        parsedstrScene = atob(decodeURIComponent(urlstrScene));
+    }
+    catch (e) {
+        console.log(e);
+        return false;
+    }
+    document.getElementById("select_scene").value = "3";
+    lastValid_strScene = parsedstrScene;
+    textarea_scene.value = parsedstrScene;
+    document.getElementById("button_moreScene").click();
+    document.getElementById("button_applyScene").click();
+    return true;
+}
 function setup() {
     initSystem(so);
     let containerIds = ["container_sceneInput", "container_renderOption", "container_simulOption", "container_sceneHelp"];
     containerIds.forEach((id) => { document.getElementById(id).style.display = 'none'; });
+    let success = readSceneFromURL();
+    if (success)
+        return;
     let initScene = strScene_randomWithRotation;
     lastValid_strScene = initScene;
     scene_set(gs, strScene_toFun(initScene));
@@ -101,15 +124,11 @@ var button_shareScene = document.getElementById("button_shareScene");
 var span_shareScene = document.getElementById("span_shareScene");
 var input_shareScene = document.getElementById("input_shareScene");
 button_shareScene.onclick = () => {
-    // let queryString : Window['location']['search'] = window.location.search;
-    // const urlParams   : URLSearchParams = new URLSearchParams(queryString);
-    // const urlstrScene : string = urlParams.get('sc');
-    // console.log(urlstrScene);
     let siteURI = window.location.href.split('?')[0];
     let strScene = textarea_scene.value;
-    let strScene64 = Base64.encode(strScene);
+    let strScene64 = btoa(strScene);
     span_shareScene.style.display = "grid";
-    input_shareScene.value = siteURI + "?scene=" + strScene64;
+    input_shareScene.value = siteURI + "?scene=" + encodeURIComponent(strScene64);
 };
 function setButtonShow(buttonId, containerId, sOpen, sClosed) {
     let button = document.getElementById(buttonId);

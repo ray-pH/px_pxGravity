@@ -2,7 +2,6 @@ import { GravitySystem, Renderer, RenderOptions, SimulOptions } from "./gravity.
 import { scenefun, scene_set, strScene_toFun, 
     strScene_randomWithRotation, strScene_randomStatic, strScene_twoGroups } from "./scenes.js"
 import { cmap_names } from "./utils/js-colormaps.js"
-import { Base64 } from "./utils/base64.js"
 
 var canvas : HTMLElement | null = document.getElementById("canvas");
 
@@ -33,10 +32,35 @@ function initSystem(so : SimulOptions){
 var debug_div = document.getElementById("debug");
 debug_div.style.display = 'none';
 
+function readSceneFromURL() : boolean{
+    let queryString : Window['location']['search'] = window.location.search;
+    let urlParams   : URLSearchParams = new URLSearchParams(queryString);
+    let urlstrScene : string = urlParams.get('scene');
+    if (urlstrScene == null) return false;
+
+    let parsedstrScene : string = "";
+    try{
+        parsedstrScene = atob(decodeURIComponent(urlstrScene));
+    } catch(e){ 
+        console.log(e);
+        return false; 
+    }
+
+    (document.getElementById("select_scene") as HTMLSelectElement).value = "3";
+    lastValid_strScene = parsedstrScene;
+    textarea_scene.value = parsedstrScene;
+    document.getElementById("button_moreScene").click();
+    document.getElementById("button_applyScene").click();
+    return true;
+}
+
 function setup() {
     initSystem(so);
     let containerIds = ["container_sceneInput", "container_renderOption", "container_simulOption", "container_sceneHelp"];
     containerIds.forEach((id : string) => { document.getElementById(id).style.display = 'none'; })
+
+    let success = readSceneFromURL();
+    if (success) return;
 
     let initScene = strScene_randomWithRotation;
     lastValid_strScene = initScene;
@@ -116,15 +140,11 @@ var button_shareScene : HTMLButtonElement = document.getElementById("button_shar
 var span_shareScene   : HTMLDivElement    = document.getElementById("span_shareScene") as HTMLDivElement;
 var input_shareScene  : HTMLInputElement  = document.getElementById("input_shareScene") as HTMLInputElement;
 button_shareScene.onclick = () => {
-    // let queryString : Window['location']['search'] = window.location.search;
-    // const urlParams   : URLSearchParams = new URLSearchParams(queryString);
-    // const urlstrScene : string = urlParams.get('sc');
-    // console.log(urlstrScene);
     let siteURI    : string = window.location.href.split('?')[0];
     let strScene   : string = textarea_scene.value;
-    let strScene64 : string = Base64.encode(strScene);
+    let strScene64 : string = btoa(strScene);
     span_shareScene.style.display = "grid";
-    input_shareScene.value = siteURI + "?scene=" + strScene64;
+    input_shareScene.value = siteURI + "?scene=" + encodeURIComponent(strScene64);
 }
 
 function setButtonShow(buttonId : string, containerId : string, sOpen : string, sClosed : string){
