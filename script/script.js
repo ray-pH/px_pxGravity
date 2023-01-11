@@ -39,7 +39,7 @@ function readSceneFromURL() {
         console.log(e);
         return false;
     }
-    document.getElementById("select_scene").value = "3";
+    document.getElementById("select_scene").value = "4";
     lastValid_strScene = parsedstrScene;
     textarea_scene.value = parsedstrScene;
     document.getElementById("button_moreScene").click();

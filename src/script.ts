@@ -47,7 +47,7 @@ function readSceneFromURL() : boolean{
         return false; 
     }
 
-    (document.getElementById("select_scene") as HTMLSelectElement).value = "3";
+    (document.getElementById("select_scene") as HTMLSelectElement).value = "4";
     lastValid_strScene = parsedstrScene;
     textarea_scene.value = parsedstrScene;
     document.getElementById("button_moreScene").click();
