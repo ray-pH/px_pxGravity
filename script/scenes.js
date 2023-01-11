@@ -49,4 +49,35 @@ let strScene_twoGroups = `function gen_clump(cx, cy, r, vx_val, vy_val, id_from,
 gen_clump(0.5, 0.5-0.1, 0.1, -1.2, 0, 0, n_particle/2);
 gen_clump(0.5, 0.5+0.1, 0.1,  1.2, 0, n_particle/2, n_particle);
 `;
-export { scene_set, strScene_toFun, strScene_randomWithRotation, strScene_randomStatic, strScene_twoGroups };
+let strScene_ringOrbit = `function gen_clump(cx, cy, r, vx_val, vy_val, id_from, id_to){
+    for (let i = id_from; i < id_to; i++){
+        let rad = r * Math.sqrt(Math.random());
+        let angle = 2* Math.PI * Math.random();
+        let x = cx + rad * Math.cos(angle);
+        let y = cy + rad * Math.sin(angle);
+        px[i] = x;
+        py[i] = y;
+        vx[i] = vx_val;
+        vy[i] = vy_val;
+    }
+}
+
+let ve = 6;
+function gen_ring(cx, cy, ri, ro, id_from, id_to){
+    for (let i = id_from; i < id_to; i++){
+        // ri + rand*(ro-ri)
+        let rad   = ri + (ro-ri) * Math.random();
+        let angle = 2* Math.PI * Math.random();
+        let x = cx + rad * Math.cos(angle);
+        let y = cy + rad * Math.sin(angle);
+        px[i] = x;
+        py[i] = y;
+        vx[i] = (y-0.5)*ve;
+        vy[i] = -(x-0.5)*ve;
+    }  
+}
+
+gen_clump(0.5, 0.5, 0.02, 0, 0, 0, n_particle/2);
+gen_ring(0.5, 0.5, 0.25,  0.3, n_particle/2, n_particle);
+`;
+export { scene_set, strScene_toFun, strScene_randomWithRotation, strScene_randomStatic, strScene_twoGroups, strScene_ringOrbit };

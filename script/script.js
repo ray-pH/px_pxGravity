@@ -1,5 +1,5 @@
 import { GravitySystem, Renderer } from "./gravity.js";
-import { scene_set, strScene_toFun, strScene_randomWithRotation, strScene_randomStatic, strScene_twoGroups } from "./scenes.js";
+import { scene_set, strScene_toFun, strScene_randomWithRotation, strScene_randomStatic, strScene_twoGroups, strScene_ringOrbit } from "./scenes.js";
 import { cmap_names } from "./utils/js-colormaps.js";
 var canvas = document.getElementById("canvas");
 var lastValid_strScene = "";
@@ -12,7 +12,7 @@ const so = {
     G: 0.6,
 };
 const ro = {
-    toggle_log_scale: false,
+    toggle_log_scale: true,
     colormap: 'bone'
 };
 cmap_names.unshift(ro.colormap);
@@ -105,7 +105,7 @@ button_applyScene.onclick = () => {
     span_errorScene.innerHTML = msg;
     renderer.draw_density(ro);
 };
-var strScenes = [strScene_randomWithRotation, strScene_randomStatic, strScene_twoGroups, ''];
+var strScenes = [strScene_randomWithRotation, strScene_randomStatic, strScene_twoGroups, strScene_ringOrbit, ''];
 var select_scene = document.getElementById("select_scene");
 select_scene.onchange = () => {
     let scene = parseInt(select_scene.value);
