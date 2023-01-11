@@ -339,8 +339,10 @@ class Renderer {
         for (let i = 0; i < gs.nxy; i++){
 
             let s = 0;
-            if (ro.toggle_log_scale) s = Math.log(1+gs.Density[i])/Math.log(1+maxdens);
-            else                     s = gs.Density[i]/maxdens;
+            if (maxdens == 0.0)           s = 0;
+            else if (ro.toggle_log_scale) s = Math.log(1+gs.Density[i])/Math.log(1+maxdens);
+            else                          s = gs.Density[i]/maxdens;
+
             s = clamp(s,0.0,1.0)
             color = evaluate_cmap(s, ro.colormap, false);
 

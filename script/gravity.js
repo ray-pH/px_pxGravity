@@ -256,7 +256,9 @@ class Renderer {
         let maxdens = Math.max(...gs.Density);
         for (let i = 0; i < gs.nxy; i++) {
             let s = 0;
-            if (ro.toggle_log_scale)
+            if (maxdens == 0.0)
+                s = 0;
+            else if (ro.toggle_log_scale)
                 s = Math.log(1 + gs.Density[i]) / Math.log(1 + maxdens);
             else
                 s = gs.Density[i] / maxdens;
