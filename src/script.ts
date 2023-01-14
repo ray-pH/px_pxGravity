@@ -1,7 +1,7 @@
 import { GravitySystem, Renderer, RenderOptions, SimulOptions } from "./gravity.js"
 import { scenefun, scene_set, strScene_toFun, 
     strScene_randomWithRotation, strScene_randomStatic, strScene_twoGroups,
-    strScene_ringOrbit} from "./scenes.js"
+    strScene_ringOrbit, strScene_ringOrbitUnstable} from "./scenes.js"
 import { cmap_names } from "./utils/js-colormaps.js"
 
 var canvas : HTMLElement | null = document.getElementById("canvas");
@@ -47,7 +47,7 @@ function readSceneFromURL() : boolean{
         return false; 
     }
 
-    (document.getElementById("select_scene") as HTMLSelectElement).value = "4";
+    (document.getElementById("select_scene") as HTMLSelectElement).value = "5";
     lastValid_strScene = parsedstrScene;
     textarea_scene.value = parsedstrScene;
     document.getElementById("button_moreScene").click();
@@ -120,7 +120,7 @@ button_applyScene.onclick = () => {
     renderer.draw_density(ro);
 }
 
-var strScenes = [strScene_randomWithRotation, strScene_randomStatic, strScene_twoGroups, strScene_ringOrbit, ''];
+var strScenes = [strScene_randomWithRotation, strScene_randomStatic, strScene_twoGroups, strScene_ringOrbit, strScene_ringOrbitUnstable, ''];
 var select_scene : HTMLSelectElement = document.getElementById("select_scene") as HTMLSelectElement;
 select_scene.onchange = () => {
     let scene = parseInt(select_scene.value);
