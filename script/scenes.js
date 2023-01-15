@@ -113,15 +113,32 @@ function gen_ring(cx, cy, ri, ro, id_from, id_to){
 gen_clump(0.5, 0.5, 0.02, 0, 0, 0, n_particle/2);
 gen_ring(0.5, 0.5, 0.25,  0.3, n_particle/2, n_particle);
 `;
-// const sceneNames = {};
+const strScene_rocheL = `function gen_clump(cx, cy, r, vx_val, vy_val, id_from, id_to){
+    for (let i = id_from; i < id_to; i++){
+        let rad = r * Math.sqrt(Math.random());
+        let angle = 2* Math.PI * Math.random();
+        let x = cx + rad * Math.cos(angle);
+        let y = cy + rad * Math.sin(angle);
+        px[i] = x;
+        py[i] = y;
+        vx[i] = vx_val;
+        vy[i] = vy_val;
+    }
+}
+
+let center_fraction = 0.99;
+let n_fraction = Math.floor(n_particle * center_fraction);
+let vel = 5;
+gen_clump(0.5, 0.5, 0.02, 0, 0, 0, n_fraction);
+gen_clump(0.5, 0.5+0.3, 0.01, 0.4*vel, 0, n_fraction, n_particle);
+`;
 const strScenes = {
     'Ring Orbit': strScene_ringOrbit,
     'Ring Orbit Unstable': strScene_ringOrbitUnstable,
     'Random with Rotation': strScene_randomWithRotation,
     'Random static': strScene_randomStatic,
     'Two Group': strScene_twoGroups,
+    'Roche Limit': strScene_rocheL,
     'Custom': '',
 };
 export { scene_set, strScene_toFun, strScenes };
-// strScene_randomWithRotation, strScene_randomStatic,
-// strScene_twoGroups, strScene_ringOrbit, strScene_ringOrbitUnstable};
