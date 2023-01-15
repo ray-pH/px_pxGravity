@@ -1,5 +1,5 @@
 import { GravitySystem, Renderer } from "./gravity.js";
-import { scene_set, strScene_toFun, strScene_randomWithRotation, strScene_randomStatic, strScene_twoGroups, strScene_ringOrbit } from "./scenes.js";
+import { scene_set, strScene_toFun, strScenes } from "./scenes.js";
 import { cmap_names } from "./utils/js-colormaps.js";
 var canvas = document.getElementById("canvas");
 var lastValid_strScene = "";
@@ -39,7 +39,8 @@ function readSceneFromURL() {
         console.log(e);
         return false;
     }
-    document.getElementById("select_scene").value = "4";
+    document.getElementById("select_scene").value =
+        (Object.keys(strScenes).length - 1).toString();
     lastValid_strScene = parsedstrScene;
     textarea_scene.value = parsedstrScene;
     document.getElementById("button_moreScene").click();
@@ -50,10 +51,15 @@ function setup() {
     initSystem(so);
     let containerIds = ["container_sceneInput", "container_renderOption", "container_simulOption", "container_sceneHelp"];
     containerIds.forEach((id) => { document.getElementById(id).style.display = 'none'; });
+    let select_scene = document.getElementById('select_scene');
+    let strScenesKeys = Object.keys(strScenes);
+    for (let id in strScenesKeys) {
+        select_scene.add(new Option(strScenesKeys[id], id));
+    }
     let success = readSceneFromURL();
     if (success)
         return;
-    let initScene = strScene_randomWithRotation;
+    let initScene = strScenes[strScenesKeys[0]];
     lastValid_strScene = initScene;
     scene_set(gs, strScene_toFun(initScene));
     textarea_scene.value = initScene;
@@ -105,11 +111,10 @@ button_applyScene.onclick = () => {
     span_errorScene.innerHTML = msg;
     renderer.draw_density(ro);
 };
-var strScenes = [strScene_randomWithRotation, strScene_randomStatic, strScene_twoGroups, strScene_ringOrbit, ''];
 var select_scene = document.getElementById("select_scene");
 select_scene.onchange = () => {
     let scene = parseInt(select_scene.value);
-    let strScene = strScenes[scene];
+    let strScene = strScenes[Object.keys(strScenes)[scene]];
     lastValid_strScene = strScene;
     textarea_scene.value = strScene;
     let f = strScene_toFun(strScene);

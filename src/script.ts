@@ -1,7 +1,5 @@
 import { GravitySystem, Renderer, RenderOptions, SimulOptions } from "./gravity.js"
-import { scenefun, scene_set, strScene_toFun, 
-    strScene_randomWithRotation, strScene_randomStatic, strScene_twoGroups,
-    strScene_ringOrbit, strScene_ringOrbitUnstable} from "./scenes.js"
+import { scenefun, scene_set, strScene_toFun, SceneStr, strScenes} from "./scenes.js"
 import { cmap_names } from "./utils/js-colormaps.js"
 
 var canvas : HTMLElement | null = document.getElementById("canvas");
@@ -47,7 +45,8 @@ function readSceneFromURL() : boolean{
         return false; 
     }
 
-    (document.getElementById("select_scene") as HTMLSelectElement).value = "5";
+    (document.getElementById("select_scene") as HTMLSelectElement).value = 
+        (Object.keys(strScenes).length - 1).toString();
     lastValid_strScene = parsedstrScene;
     textarea_scene.value = parsedstrScene;
     document.getElementById("button_moreScene").click();
@@ -60,10 +59,14 @@ function setup() {
     let containerIds = ["container_sceneInput", "container_renderOption", "container_simulOption", "container_sceneHelp"];
     containerIds.forEach((id : string) => { document.getElementById(id).style.display = 'none'; })
 
+    let select_scene = document.getElementById('select_scene') as HTMLSelectElement;
+    let strScenesKeys = Object.keys(strScenes);
+    for (let id in strScenesKeys){ select_scene.add(new Option(strScenesKeys[id], id)); }
+
     let success = readSceneFromURL();
     if (success) return;
 
-    let initScene = strScene_randomWithRotation;
+    let initScene = strScenes[strScenesKeys[0]];
     lastValid_strScene = initScene;
     scene_set(gs, strScene_toFun(initScene));
     textarea_scene.value = initScene;
@@ -120,11 +123,10 @@ button_applyScene.onclick = () => {
     renderer.draw_density(ro);
 }
 
-var strScenes = [strScene_randomWithRotation, strScene_randomStatic, strScene_twoGroups, strScene_ringOrbit, strScene_ringOrbitUnstable, ''];
 var select_scene : HTMLSelectElement = document.getElementById("select_scene") as HTMLSelectElement;
 select_scene.onchange = () => {
     let scene = parseInt(select_scene.value);
-    let strScene = strScenes[scene];
+    let strScene = strScenes[Object.keys(strScenes)[scene]];
     lastValid_strScene = strScene;
     textarea_scene.value = strScene;
     let f : scenefun = strScene_toFun(strScene);

@@ -130,5 +130,16 @@ gen_clump(0.5, 0.5, 0.02, 0, 0, 0, n_particle/2);
 gen_ring(0.5, 0.5, 0.25,  0.3, n_particle/2, n_particle);
 `
 
-export {scenefun, scene_set, strScene_toFun, strScene_randomWithRotation, strScene_randomStatic,
-strScene_twoGroups, strScene_ringOrbit, strScene_ringOrbitUnstable};
+interface SceneStr {
+    [key : string] : string;
+}
+const strScenes : SceneStr = {
+    'Ring Orbit'           : strScene_ringOrbit,
+    'Ring Orbit Unstable'  : strScene_ringOrbitUnstable,
+    'Random with Rotation' : strScene_randomWithRotation,
+    'Random static'        : strScene_randomStatic,
+    'Two Group'            : strScene_twoGroups,
+    'Custom'               : '',
+}
+
+export {scenefun, scene_set, strScene_toFun, SceneStr, strScenes};
